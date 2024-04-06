@@ -1,26 +1,41 @@
 
 import express from "express";
-// import morgan from "morgan";
-// import cookie from "cookie-parser";
-// import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from "./helper/swagger/swagger.js";
-// import express from "express";
-// import morgan from "morgan";
-// import cookie from "cookie-parser";
-// import swaggerUi from 'swagger-ui-express';
-// import swaggerDocument from "./helper/swagger/swagger.js";
+import envalid from "envalid";
+import morgan from "morgan";
+import cookie from "cookie-parser";
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from "./helper/swagger/swagger.js";
 
+
+const { str, port } = envalid;
 const app = express();
 
 
+
+//importar las rutas 
+import auth from "./router/authRouter.js";
+
+
+
 //middlewares
-// app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
-// app.use(cookie());
+app.use(cookie());
 
 
-app.listen(3000, () => {
-    console.log("Server is running on port 3000");
-}
-);
+// importar las rutas
+auth(app)
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+
+
+//middleware de errores
+app.use((error, req, res, next) => {
+    console.error(error.message);
+   res.status(500).json({ message:  error.message || error });
+  
+  });
+
+  
+export default app;
