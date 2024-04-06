@@ -31,6 +31,6 @@ async function main() {
     }
 }
 
-const db = await main();
+// const db = await main();
 
-export default db;
+// export default db;
