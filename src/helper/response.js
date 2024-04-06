@@ -43,13 +43,15 @@ const authResponse = async (res = response, status, ok, message, data) => {
   return res.status(status).json({ ok, message, payload, token, exp });
 };
 
-const Responsee = async (res = response, status, ok, message, data) => {
+const results = async (res, status, ok, message, data = {}) => {
   try {
-    const { payload, token } = data;
-    return res.status(status).json({ ok, message, payload, token });
+    const { results = {} } = data; // Set default empty object for payload
+
+    return res.status(status).json({ ok, message, results });
   } catch (error) {
-    return errorResponse(res, error);
+    return errorResponse(res, error); // Assuming errorResponse is defined elsewhere
   }
 };
 
-export { errorResponse, authResponse, Responsee };
+
+export { errorResponse, authResponse, results };

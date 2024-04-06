@@ -2,7 +2,7 @@ import express, { response } from "express";
 
 import AuthService from "../service/authService.js";
 
-import { errorResponse, authResponse, Responsee } from "../helper/response.js";
+import { errorResponse, authResponse, results } from "../helper/response.js";
 import { BadRequest } from "../middleware/errors.js";
 
 
@@ -25,8 +25,8 @@ function authRouter(app) {
             if (!response.success) throw new BadRequest(response.error.message);
             
             const { insertedData } = response;
-            Responsee(res, 200, true, "User create ", {
-                payload: insertedData,
+            results(res, 200, true, "User create ", {
+                results: insertedData,
                 // token,
             });
             
