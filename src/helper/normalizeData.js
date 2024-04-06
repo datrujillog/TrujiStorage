@@ -9,7 +9,7 @@ import { BadRequest } from '../middleware/errors.js';
 // const log = log4js.getLogger(`${process.env.NODE_ENV} - normalizeData`);
 
 
-const Ejemplo = async (body, businessId, user, results) => {
+const Ejemplo = async (body) => {
     const requiredFields = ['tableId', 'servidores'];
 
     try {
@@ -19,9 +19,9 @@ const Ejemplo = async (body, businessId, user, results) => {
             }
         }
 
-        
 
-        
+
+
 
     } catch (error) {
         return { success: false, error: error.message };
@@ -30,7 +30,7 @@ const Ejemplo = async (body, businessId, user, results) => {
 
 
 const parseSignup = async (body) => {
-    const requiredFields = ['name'];
+    const requiredFields = ['name', 'email', 'password'];
 
     try {
         for (const field of requiredFields) {
@@ -41,20 +41,55 @@ const parseSignup = async (body) => {
 
         const user = {
             name: body.name,
+            email: body.email,
+            password: body.password,
+            active: Boolean,
+
         }
 
         return { success: true, user };
 
-        
+
 
     } catch (error) {
         return { success: false, error: error.message };
     }
-}; 
+};
+
+
+
+const parseFolder = async (body) => {
+    const requiredFields = ['name', 'owner'];
+
+    try {
+        for (const field of requiredFields) {
+            if (!(field in body)) {
+                throw new BadRequest(`Falta el campo obligatorio: ${field}`);
+            }
+        }
+
+        const folder = {
+            name: body.name,
+            owner: ObjectId(user),
+            subfolders : [
+                {
+                    name: body.name,
+                    owner: ObjectId(user),
+                    subfolders: []
+                }
+                
+            
+            ]
+        }
 
 
 
 
+
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+};
 
 
 

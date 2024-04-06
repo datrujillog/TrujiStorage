@@ -4,6 +4,7 @@ import AuthService from "../service/authService.js";
 
 import { errorResponse, authResponse, results } from "../helper/response.js";
 import { BadRequest } from "../middleware/errors.js";
+import env from "../config/env.js";
 
 
 
@@ -13,7 +14,7 @@ function authRouter(app) {
     //instanciar el servicio
     const authServ = new AuthService();
 
-    app.use("/api/v1/auth", router);
+    app.use(env.AUTH_URL, router);
 
     router.post("/signup", async(req, res) => {
 
