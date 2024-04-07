@@ -18,36 +18,27 @@ function fileRouter(app) {
         const { fileName } = req.params;
 
         try {
-            const result = await filesServ.download(fileName); 
- 
+            const result = await filesServ.download(fileName);
+
             if (result.success) {
-                if (result.data) { 
-                    result.data.pipe(res);
+                result.data.pipe(res);
 
-                    result.data.on("error", (error) => {
-                        console.log("Error:", error);
-                        return res.status(500).json({ message: "Error al descargar el archivo" });
-                    });
-
-                    result.data.on("end", () => {
-                        console.log("Finished");
-                    });
-                } else {
-                    console.error("Error: No se pudo obtener el flujo de datos del archivo");
+                result.data.on("error", (error) => {
+                    console.log("Error:", error);
                     return res.status(500).json({ message: "Error al descargar el archivo" });
-                }
+                });
+
+                result.data.on("end", () => {
+                    console.log("Finished");
+                });
+
             } else {
                 return res.status(404).json({ message: "El archivo no se encontró" });
             }
         } catch (error) {
             // Verificar si el error es NoSuchKey
-            if (error.code === "NoSuchKey") {
-                return res.status(404).json({ message: "El archivo no se encontró" });
-            } else {
-                // Manejar otros errores
-                console.error("Error al descargar el archivo:", error);
-                return res.status(500).json({ message: "Error al descargar el archivo" });
-            }
+            console.error("Error al descargar el archivo:", error);
+            return res.status(500).json({ message: "Error al descargar el archivo" });
         }
     });
 
