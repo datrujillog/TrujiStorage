@@ -10,6 +10,7 @@ const config = {
    port: process.env.PORT,
    urlMongodb: process.env.DATABASE_URL,
    dataBase: process.env.DATABASE_NAME,
+   awsBucketName:process.env.AWS_BUCKET_NAME
 }
 
 
