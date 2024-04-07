@@ -12,19 +12,21 @@ class FilesService {
 
 
     async upload(fileName, file) {
+        //TODO SOLUCIONAR EL PROBLEMA DE MUTER
         try {
-            const ext = path.extname(fileName);    
+
+            const ext = path.extname(fileName);
             const uploadParams = {
                 Bucket: config.awsBucketName,
                 Key: `uploads/${Date.now()}${ext}`,
                 Body: file
-            };    
-            const uploadResult = await s3.upload(uploadParams).promise();    
+            };
+            const uploadResult = await s3.upload(uploadParams).promise();
             console.log('UPLOAD RESULT:', uploadResult);
             const key = uploadResult.Key;
             const url = `${config.cloudFrontUrl}/${key}`;
             const location = uploadResult.Location;
-    
+
             return {
                 success: true,
                 key,
@@ -32,12 +34,33 @@ class FilesService {
                 message: "File uploaded successfully",
                 location
             };
+
         } catch (error) {
             console.error('UPLOAD ERROR:', error);
             return { success: false, message: "An error occurred" };
         }
     }
-    
+
+    async download(fileName) {
+
+        try {
+
+            const result = s3.getObject({
+                Key: `uploads/${fileName}`,
+                Bucket: config.awsBucketName,
+            }).createReadStream()
+
+            return {
+                success: true,
+                message: "File downloaded successfully",
+                data: result
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "An error ocurred" }
+        }
+    }
 
 
 
