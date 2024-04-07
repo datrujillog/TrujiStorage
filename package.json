@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.12.1",
+    "aws-sdk": "^2.1594.0",
+    "busboy": "^1.6.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "envalid": "^8.0.0",
@@ -21,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.5.0",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
