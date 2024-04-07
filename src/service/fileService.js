@@ -50,7 +50,7 @@ class FilesService {
                 Bucket: config.awsBucketName,
             }).createReadStream()
 
-            return {
+            return { 
                 success: true,
                 message: "File downloaded successfully",
                 data: result
@@ -62,6 +62,24 @@ class FilesService {
         }
     }
 
+    async delete(fileName) {
+        try {
+            const result = await s3.deleteObject({
+                Key: `uploads/${fileName}`,
+                Bucket: config.awsBucketName
+            }).promise()
+
+            return {
+                success: true,
+                message: "File deleted successfully",
+                key: fileName
+            }
+
+        } catch (error) {
+            console.log(error)
+            return { success: false, message: "An error ocurred" }
+        }
+    }
 
 
 }
