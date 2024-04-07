@@ -17,8 +17,6 @@ class FilesService {
         try {
 
             const ext = path.extname(fileName)
-
-
             // const PassStream = new PassThrough()
 
             const result = await s3.upload({
@@ -27,14 +25,13 @@ class FilesService {
                 Body: file
             }).promise()
 
-            // regidtrar en la base de datos
 
             console.log('UPLAOD <> ', result)
 
             return {
                 success: true,
                 key: result.Key,
-                // url: `${config.cloudFrontUrl}/${result.Key}`,
+                url: `${config.cloudFrontUrl}/${result.Key}`,
                 message: "File uploaded successfully",
                 location: result.Location
             }
