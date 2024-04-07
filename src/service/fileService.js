@@ -15,35 +15,35 @@ class FilesService {
 
     async upload(fileName, file) {
         try {
-
-            const ext = path.extname(fileName)
-            // const PassStream = new PassThrough()
-
-            const result = await s3.upload({
+            const ext = path.extname(fileName);
+    
+            const uploadParams = {
                 Bucket: config.awsBucketName,
-                Key: 'uploads' + Date.now() + ext,
+                Key: `uploads/${Date.now()}${ext}`,
                 Body: file
-            }).promise()
-
-
-            console.log('UPLAOD <> ', result)
-
+            };
+    
+            const uploadResult = await s3.upload(uploadParams).promise();
+    
+            console.log('UPLOAD RESULT:', uploadResult);
+    
+            const key = uploadResult.Key;
+            const url = `${config.cloudFrontUrl}/${key}`;
+            const location = uploadResult.Location;
+    
             return {
                 success: true,
-                key: result.Key,
-                url: `${config.cloudFrontUrl}/${result.Key}`,
+                key,
+                url,
                 message: "File uploaded successfully",
-                location: result.Location
-            }
-
-
+                location
+            };
         } catch (error) {
-            console.log(error)
-            return { success: false, message: "An error ocurred" }
+            console.error('UPLOAD ERROR:', error);
+            return { success: false, message: "An error occurred" };
         }
-
-
     }
+    
 
 
 
