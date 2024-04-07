@@ -2,6 +2,7 @@ import AWS from 'aws-sdk'
 import config from '../config/config.js'
 import path from 'path'
 import upload from '../middleware/upload.js'
+import env from '../config/env.js'
 
 const s3 = new AWS.S3()
 
@@ -47,7 +48,7 @@ class FilesService {
 
             const result = s3.getObject({
                 Key: `uploads/${fileName}`,
-                Bucket: config.awsBucketName,
+                Bucket: env.AWS_BUCKET_NAME,
             }).createReadStream()
 
             return { 
