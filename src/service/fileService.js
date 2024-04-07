@@ -1,11 +1,8 @@
 import AWS from 'aws-sdk'
-// const { config } = require("dotenv")
 import config from '../config/config.js'
 import path from 'path'
 
-// const s3 = new AWS.S3({ region: config.awsRegion })
 const s3 = new AWS.S3()
-// Initialize the Amazon Cognito credentials
 
 class FilesService {
     constructor() {
