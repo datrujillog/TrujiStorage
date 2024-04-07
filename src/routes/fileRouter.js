@@ -12,7 +12,23 @@ function fileRouter(app) {
 
     app.use("/api/v1/files", router)
 
-    router.post("/", async (req, res) => {
+    router.get("/:fileName",async (req,res)=>{
+        const {fileName} = req.params
+
+        const result = await filesServ.download(fileName)
+
+        if(result.success){
+            result.data.pipe(res)
+            result.data.on("end",()=>{
+                console.log("Finished")
+            })
+        }else{
+            return res.status(400).json(result)
+        }
+
+    })
+
+    router.post("/upload", async (req, res) => {
         const bb = busboy({ headers: req.headers });
     
         bb.on('file', async (name, file, info) => {
