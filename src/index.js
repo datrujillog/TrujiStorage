@@ -13,7 +13,8 @@ const app = express();
 
 
 //importar las rutas 
-import auth from "./router/authRouter.js";
+import auth from "./routes/authRouter.js";
+import file from "./routes/fileRouter.js";
 
 
 
@@ -26,6 +27,7 @@ app.use(cookie());
 
 // importar las rutas
 auth(app)
+file(app)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
