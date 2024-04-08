@@ -43,7 +43,7 @@ const parseSignup = async (body) => {
             name: body.name,
             email: body.email,
             password: body.password,
-            active: Boolean,
+            active: body.active
 
         }
 

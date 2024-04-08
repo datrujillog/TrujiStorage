@@ -14,7 +14,7 @@ function fileRouter(app) {
 
     //! controlar el error cuando no existe un archivo a borrar
 
-    router.get("/:fileName", async (req, res) => {
+    router.get("/:fileName",  async (req, res) => {
         const { fileName } = req.params;
 
         try {

@@ -19,10 +19,10 @@ class AuthService extends UserRepository {
         const users = await this.createUsers(save.user);
         if (!users.success) throw new BadRequest(users.error.message);
 
-        const { insertedData } = users;
+        const { user } = users;
         return {
             success: true,
-            insertedData
+            user
         }
 
     }
