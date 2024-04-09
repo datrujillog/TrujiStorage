@@ -4,6 +4,8 @@ import { BadRequest } from "../middleware/errors.js";
 import { UserRepository } from "../repositories/userRepository.js";
 
 import { compare, encrypt } from "../libs/bcrypt.js";
+import { createToken } from "../libs/jwt.js";
+
 import { parseSignup } from "../helper/normalizeData.js";
 
 
@@ -16,24 +18,20 @@ class AuthService extends UserRepository {
     }
 
     async login(data) {
-        try {
-            const { email, password } = data;
-            
-            const results = await this.getByEmail(email);
-            if (!results.success) throw new BadRequest(results.error.message);
 
-            await compare(password, results.results.password)
-            const token = await this.crearToken(results);
-            const user = results.results;
+        const { email, password } = data;
 
-            return { 
-                success: true, 
-                user, token 
-            };
+        const results = await this.getByEmail(email);
 
-        } catch (error) {
-            return { success: false, error };
-        }
+        const { resulEmail } = results;
+        await compare(password, results.resulEmail.password)
+        const token = await createToken(resulEmail);
+
+        return {
+            success: true,
+            user: resulEmail,
+            token
+        };
     }
 
     async signup(body) {
