@@ -10,6 +10,7 @@ const env = envalid.cleanEnv(process.env, {
    PORT: port({ desc: 'pendiente configurar el puerto de la aplicacion' }),
    AUTH_URL: str({ desc: 'pendiente de configurar la url de autenticacion' }),
    AWS_BUCKET_NAME: str({ desc: 'pendiente de configurar el nombre del bucket de aws' }),
+   JWT_SECRET: str({ desc: 'pendiente de configurar el secreto del token' }),
 });
 
 export default env;
