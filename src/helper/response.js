@@ -1,6 +1,7 @@
 import { response } from "express";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
+import env from "../config/env.js";
 
 const errorResponse = (res = response, error) => {
   if (error.hasOwnProperty("code") || error.hasOwnProperty("errors")) {
@@ -35,7 +36,7 @@ const authResponse = async (res = response, status, ok, message, data) => {
   const { payload, token } = data;
   let exp;
   try {
-    exp = jwt.verify(data.token.token, config.jwtSecret).exp;
+    exp = jwt.verify(token, env.JWT_SECRET).exp;
   } catch (error) {
     return errorResponse(res, error);
   }
