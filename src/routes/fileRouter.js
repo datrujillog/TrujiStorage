@@ -4,6 +4,7 @@ import { createReadStream, createWriteStream } from 'fs';
 
 import { Router } from 'express';
 import FilesService from '../service/fileService.js';
+import { errorResponse } from '../helper/response.js';
 
 function fileRouter(app) {
     const router = Router();
@@ -44,37 +45,27 @@ function fileRouter(app) {
 
 
 
-    router.post("/upload", async (req, res) => {
+    router.post("/files-upload", upload.array("files"), async (req, res) => {
 
         try {
+            const file = req.file;
+            const fileName = file.originalname;
+            // const body = req.body.id;
 
-            const bb = busboy({ headers: req.headers });
+            const result = await filesServ.upload(fileName, file.buffer);
 
-            bb.on('file', async (name, file, info) => {
-                try {
-                    const { filename } = info;
-                    const result = await filesServ.upload(filename, file);
-                    res.status(200).json(result);
-                } catch (error) {
-                    console.error('Error uploading file:', error);
-                    res.status(500).json({ success: false, message: "An error occurred while uploading the file" });
-                }
-            });
+            if (result.success) {
+                return res.status(201).json(result);
+            } else {
+                return res.status(400).json(result);
+            }
 
-            bb.on('finish', () => {
-                console.log('All files uploaded successfully');
-            });
-
-            bb.on('error', (error) => {
-                console.error('Error parsing form:', error);
-                res.status(500).json({ success: false, message: "An error occurred while parsing the form" });
-            });
-
-            req.pipe(bb);
+            
 
         } catch (error) {
             console.error('Error uploading file:', error);
-            res.status(500).json({ success: false, message: "An error occurred while uploading the file" });
+            // res.status(500).json({ success: false, message: "An error occurred while uploading the file" });
+            errorResponse(res, error)
         }
 
 

@@ -1,8 +1,11 @@
-import AWS from 'aws-sdk'
+// import AWS from 'aws-sdk'
 import config from '../config/config.js'
 import path from 'path'
 import upload from '../middleware/upload.js'
 import env from '../config/env.js'
+
+import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import fs from 'fs'
 
 const s3 = new AWS.S3()
 
@@ -11,12 +14,17 @@ class FilesService {
 
     }
 
+   
+    
+
 
     async upload(fileName, file) {
         
         try {
 
-            const ext = path.extname(fileName);
+            const ext = path.extname(fileName);  //  esta funcion devuelve la extension del archivo
+
+            
             const uploadParams = {
                 Bucket: config.awsBucketName,
                 Key: `uploads/${Date.now()}${ext}`,
@@ -46,16 +54,7 @@ class FilesService {
 
         try {
 
-            const result = s3.getObject({
-                Key: `uploads/${fileName}`,
-                Bucket: env.AWS_BUCKET_NAME,
-            }).createReadStream()
-
-            return {
-                success: true,
-                message: "File downloaded successfully",
-                data: result
-            }
+           
 
         } catch (error) {
             console.log(error)
