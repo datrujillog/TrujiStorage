@@ -17,6 +17,7 @@
     "@aws-sdk/lib-storage": "^3.550.0",
     "@prisma/client": "^5.12.1",
     "aws-sdk": "^2.1594.0",
+    "bcrypt": "^5.1.1",
     "busboy": "^1.6.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
