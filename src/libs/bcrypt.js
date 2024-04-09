@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
-import { BadRequest } from '../middleware/errors';
+import bcrypt from 'bcrypt';
+import { BadRequest } from '../middleware/errors.js';
 
 export async function encrypt(string) {
 
