@@ -1,13 +1,13 @@
 
 import express from "express";
-import envalid from "envalid";
+import { cleanEnv, str, port } from "envalid";
 import morgan from "morgan";
 import cookie from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from "./helper/swagger/swagger.js";
 
 
-const { str, port } = envalid;
+// const { str, port } = envalid;
 const app = express();
 
 
