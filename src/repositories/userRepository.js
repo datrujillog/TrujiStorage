@@ -35,21 +35,23 @@ class UserRepository {
 
         try {
 
-            const results = await this.#userModel.findUnique({
+            if(email === undefined) throw new BadRequest("Email is required");
+
+            const resulEmail = await this.#userModel.findUnique({
                 where: {
                     email
                 }
             });
 
-            if (!results) throw new BadRequest("User not found");
+            if (!resulEmail) throw new BadRequest("User not found");
 
             return {
                 success: true,
-                results
+                resulEmail 
             }
 
         } catch (error) {
-            return { success: false, error: { message: error.message } };
+            return { success: false, error };
 
         }
     }
