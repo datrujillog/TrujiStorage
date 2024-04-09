@@ -1,6 +1,10 @@
-import { parseSignup } from "../helper/normalizeData.js";
+
 import { BadRequest } from "../middleware/errors.js";
+
 import { UserRepository } from "../repositories/userRepository.js";
+
+import { compare, encrypt } from "../libs/bcrypt.js";
+import { parseSignup } from "../helper/normalizeData.js";
 
 
 
@@ -15,10 +19,11 @@ class AuthService extends UserRepository {
         try {
             const { email, password } = data;
             const results = await this.getByEmail(email);
-            if(!results.success) throw new BadRequest(results.error.message);
+            if (!results.success) throw new BadRequest(results.error.message);
 
-            
+
             //   await this.#compare(password, results.results.password);
+            await compare(password, results.results.password)
             const token = await this.crearToken(results);
             const user = results.results;
             return { success: true, user, token };
@@ -28,6 +33,8 @@ class AuthService extends UserRepository {
     }
 
     async signup(body) {
+
+        if(body.password) data.password = await encrypt(data.password);
 
         const save = await parseSignup(body)
         if (!save.success) throw new BadRequest(save.error);
