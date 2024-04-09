@@ -20,7 +20,6 @@ class AuthService extends UserRepository {
     async login(data) {
 
         const { email, password } = data;
-
         const results = await this.getByEmail(email);
 
         const { resulEmail } = results;
