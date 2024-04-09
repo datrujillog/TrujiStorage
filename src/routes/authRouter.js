@@ -38,6 +38,24 @@ function authRouter(app) {
         }
 
     })
+
+    router.post("/login", async (req, res) => {
+        try {
+            const body = req.body;
+            
+            const response = await authServ.login(body);
+            if (!response.success) throw new BadRequest(response.error.message);
+
+            const { user, token } = response;
+            results(res, 200, true, "User login ", {
+                results: user,
+                token,
+            });
+
+        } catch (error) {
+            errorResponse(res, error.message);
+        }
+    })
 }
 
 
