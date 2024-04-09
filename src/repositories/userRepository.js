@@ -12,23 +12,46 @@ class UserRepository {
     async createUsers(data) {
         try {
 
-           const user = await this.#userModel.create({
+            const user = await this.#userModel.create({
                 data
             });
 
             return {
                 success: true,
-                 user
+                user
             }
-            
 
-        } catch (error) {  
+
+        } catch (error) {
             console.log(error);
             return { success: false, error: { message: error.message } };
 
         }
 
 
+    }
+
+    async getByEmail(email) {
+
+        try {
+
+            const results = await this.#userModel.findUnique({
+                where: {
+                    email
+                }
+            });
+
+            if (!results) throw new BadRequest("User not found");
+
+            return {
+                success: true,
+                results
+            }
+
+        } catch (error) {
+            return { success: false, error: { message: error.message } };
+
+        }
     }
 
 
