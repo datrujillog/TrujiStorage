@@ -13,7 +13,7 @@ class FilesService {
 
 
     async upload(fileName, file) {
-        //TODO SOLUCIONAR EL PROBLEMA DE MUTER
+        
         try {
 
             const ext = path.extname(fileName);
@@ -51,7 +51,7 @@ class FilesService {
                 Bucket: env.AWS_BUCKET_NAME,
             }).createReadStream()
 
-            return { 
+            return {
                 success: true,
                 message: "File downloaded successfully",
                 data: result
