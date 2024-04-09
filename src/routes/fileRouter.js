@@ -14,7 +14,7 @@ function fileRouter(app) {
 
     //! controlar el error cuando no existe un archivo a borrar
 
-    router.get("/:fileName",  async (req, res) => {
+    router.get("/:fileName", async (req, res) => {
         const { fileName } = req.params;
 
         try {
@@ -45,29 +45,39 @@ function fileRouter(app) {
 
 
     router.post("/upload", async (req, res) => {
-        const bb = busboy({ headers: req.headers });
 
-        bb.on('file', async (name, file, info) => {
-            try {
-                const { filename } = info;
-                const result = await filesServ.upload(filename, file);
-                res.status(200).json(result);
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                res.status(500).json({ success: false, message: "An error occurred while uploading the file" });
-            }
-        });
+        try {
 
-        bb.on('finish', () => {
-            console.log('All files uploaded successfully');
-        });
+            const bb = busboy({ headers: req.headers });
 
-        bb.on('error', (error) => {
-            console.error('Error parsing form:', error);
-            res.status(500).json({ success: false, message: "An error occurred while parsing the form" });
-        });
+            bb.on('file', async (name, file, info) => {
+                try {
+                    const { filename } = info;
+                    const result = await filesServ.upload(filename, file);
+                    res.status(200).json(result);
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                    res.status(500).json({ success: false, message: "An error occurred while uploading the file" });
+                }
+            });
 
-        req.pipe(bb);
+            bb.on('finish', () => {
+                console.log('All files uploaded successfully');
+            });
+
+            bb.on('error', (error) => {
+                console.error('Error parsing form:', error);
+                res.status(500).json({ success: false, message: "An error occurred while parsing the form" });
+            });
+
+            req.pipe(bb);
+
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            res.status(500).json({ success: false, message: "An error occurred while uploading the file" });
+        }
+
+
     });
     router.delete("/:fileName", async (req, res) => {
         const { fileName } = req.params
