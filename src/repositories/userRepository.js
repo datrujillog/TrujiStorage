@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-import { BadRequest } from "../middleware/errors.js";
+import { BadRequest, NotFound } from "../middleware/errors.js";
 
 
 class UserRepository {
@@ -43,7 +43,7 @@ class UserRepository {
                 }
             });
 
-            if (!resulEmail) throw new BadRequest("User not found");
+            if (!resulEmail) throw new NotFound("User not found");
 
             return {
                 success: true,
@@ -51,7 +51,8 @@ class UserRepository {
             }
 
         } catch (error) {
-            return { success: false, error };
+            // return { success: false, error };
+            throw new BadRequest(error);
 
         }
     }
