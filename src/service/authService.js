@@ -18,15 +18,19 @@ class AuthService extends UserRepository {
     async login(data) {
         try {
             const { email, password } = data;
+            
             const results = await this.getByEmail(email);
             if (!results.success) throw new BadRequest(results.error.message);
 
-
-            //   await this.#compare(password, results.results.password);
             await compare(password, results.results.password)
             const token = await this.crearToken(results);
             const user = results.results;
-            return { success: true, user, token };
+
+            return { 
+                success: true, 
+                user, token 
+            };
+
         } catch (error) {
             return { success: false, error };
         }
@@ -34,7 +38,7 @@ class AuthService extends UserRepository {
 
     async signup(body) {
 
-        if(body.password) data.password = await encrypt(data.password);
+        if (body.password) body.password = await encrypt(body.password);
 
         const save = await parseSignup(body)
         if (!save.success) throw new BadRequest(save.error);
