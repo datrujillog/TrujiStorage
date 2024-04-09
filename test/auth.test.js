@@ -89,7 +89,8 @@ describe('AuthService', () => {
             } catch (error) {
                 // Verifica que el error sea el esperado
                 expect(error).toBeInstanceOf(Error);
-                // expect(error.message).toBe('User not found');
+                // expect(error.message).toBe();  //
+                expect(error.message).toBe('User not found');
             }
         });
 
