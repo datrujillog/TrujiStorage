@@ -11,6 +11,22 @@ class AuthService extends UserRepository {
 
     }
 
+    async login(data) {
+        try {
+            const { email, password } = data;
+            const results = await this.getByEmail(email);
+            if(!results.success) throw new BadRequest(results.error.message);
+
+            
+            //   await this.#compare(password, results.results.password);
+            const token = await this.crearToken(results);
+            const user = results.results;
+            return { success: true, user, token };
+        } catch (error) {
+            return { success: false, error };
+        }
+    }
+
     async signup(body) {
 
         const save = await parseSignup(body)
