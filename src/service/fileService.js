@@ -33,7 +33,7 @@ class FilesService extends FileRepository {
     async download(fileName, res) {
 
         const file = await this.findFileById(fileName)
-        // if(!file.success) throw new BadRequest("Datos no encontrados en la base de datos")
+        if(!file.success) throw new BadRequest("Datos no encontrados en la base de datos")
 
         if (file) {
             return await downloadFile(fileName, res)
