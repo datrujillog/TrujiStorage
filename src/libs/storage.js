@@ -1,12 +1,55 @@
 import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import fs from 'fs'
+import path from 'path'
+import { v4 as uuidv4 } from 'uuid';
+
 import config from '../config/config.js'
 
 const client = new S3Client({
-  region: config.awsBucketRegion,
-  credentials: {
-    accessKeyId: config.awsBucketAccessKey,
-    secretAccessKey: config.awsBucketSecretAccessKey
-  }
+    region: config.awsBucketRegion,
+    credentials: {
+        accessKeyId: config.awsBucketAccessKey,
+        secretAccessKey: config.awsBucketSecretAccessKey
+    }
 })
+
+async function uploadFiles(file) {
+    try {
+        const stream = fs.createReadStream(file.path);
+        const ext = path.extname(file.filename);
+        const fileName  = uuidv4() + ext;
+
+        const uploadParams = {
+            Bucket: config.awsBucketName,
+            Key: `uploads/${fileName}`,
+            Body: stream
+        };
+        const command = new PutObjectCommand(uploadParams);
+        await client.send(command);
+        return {
+            success: true,
+            message: 'File uploaded successfully',
+            originalName: file.originalname,
+            fileName: file.name
+        };
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        return {
+            success: false,
+            message: 'An error occurred while uploading the file'
+        };
+    }
+}
+
+
+const uploadFile = async (files) => {
+    const promises = files.map(file => uploadFiles(file));
+    const results = await Promise.allSettled(promises);
+
+    return results;
+}
+
+export {
+    uploadFile
+};
