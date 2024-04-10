@@ -1,27 +1,39 @@
-// import AWS from 'aws-sdk'
 import config from '../config/config.js'
-import path from 'path'
-import upload from '../middleware/upload.js'
 import env from '../config/env.js'
 
-import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
 import { uploadFile } from '../libs/storage.js'
+import FileRepository from '../repositories/fileRepository.js'
 
-// const s3 = new AWS.S3()
 
-class FilesService {
+class FilesService extends FileRepository {
     constructor() {
+        super()
 
     }
 
     async uploadMany(files) {
         const results = await uploadFile(files)
 
-        return results
+        // gardar en la base de datos los archivos subidos
+        const promises = results.map(async (result) => {
+            if (result.status === 'fulfilled') {
+                return await this.createfileName(result.value)
+            }
+        })
+
+        const results2 = await Promise.all(promises)
+
+        return {
+            success: true,
+            message: 'Files uploaded successfully',
+            // data: results2
+            data: results2
+        }
     }
 
-   
-    
+
+
+
 
 
 
@@ -30,7 +42,7 @@ class FilesService {
 
         try {
 
-           
+
 
         } catch (error) {
             console.log(error)
