@@ -22,7 +22,7 @@ function fileEjemploRouter(app) {
 
 
 
-    router.post("/files-upload", upload.array("files"), async (req, res) => {
+    router.post("/files-upload",  async (req, res) => {
 
         try {
 
