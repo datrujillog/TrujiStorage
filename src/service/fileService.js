@@ -37,8 +37,6 @@ class FilesService extends FileRepository {
 
         if (file) {
             return await downloadFile(fileName, res)
-
-
         }
         return {
             success: false,
