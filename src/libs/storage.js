@@ -31,7 +31,9 @@ async function uploadFiles(file) {
             success: true,
             message: 'File uploaded successfully',
             originalName: file.originalname,
-            fileName: file.name
+            key : uploadParams.Key,
+            filename: uploadParams.Key,
+            fileName
         };
     } catch (error) {
         console.error('Error uploading file:', error);
