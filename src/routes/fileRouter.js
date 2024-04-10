@@ -18,8 +18,9 @@ function fileRouter(app) {
     router.post("/upload", uploadFile.array('files'),(req, res) => {
 
         try {
-            console.log(req.file)
-            res.send({ success: true, message: "File uploaded successfully"})
+            const results = filesServ.uploadMany(req.files)
+            // console.log(req.file)
+            res.json(results)
 
 
         } catch (error) {
