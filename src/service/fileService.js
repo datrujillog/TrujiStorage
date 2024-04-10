@@ -13,7 +13,6 @@ class FilesService extends FileRepository {
 
     async uploadMany(files) {
         const results = await uploadFile(files)
-
         // gardar en la base de datos los archivos subidos
         const promises = results.map(async (result) => {
             if (result.status === 'fulfilled') {
@@ -22,7 +21,6 @@ class FilesService extends FileRepository {
         })
 
         const results2 = await Promise.all(promises)
-
         return {
             success: true,
             message: 'Files uploaded successfully',

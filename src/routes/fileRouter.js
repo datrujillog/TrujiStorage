@@ -26,7 +26,7 @@ function fileRouter(app) {
             
             res.status(200).json({
                 success: true,
-                results
+                message: 'Files uploaded successfully',
             })
 
 
