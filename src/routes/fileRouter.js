@@ -15,12 +15,19 @@ function fileRouter(app) {
 
     app.use("/api/v1/files", router)
 
-    router.post("/upload", uploadFile.array('files'),(req, res) => {
+    router.post("/upload", uploadFile.array('files'), (req, res) => {
 
         try {
+
             const results = filesServ.uploadMany(req.files)
-            // console.log(req.file)
-            res.json(results)
+            if(!results) {
+                return errorResponse(res, {message: "An error occurred while uploading the file"})
+            }
+            
+            res.status(200).json({
+                success: true,
+                results
+            })
 
 
         } catch (error) {
