@@ -1,12 +1,11 @@
-import uploadFile from '../middleware/upload.js';
-import fileUpload from 'express-fileupload'
-
-
 import { Router } from 'express';
+
 import FilesService from '../service/fileService.js';
-import { errorResponse } from '../helper/response.js';
+
+import uploadFile from '../middleware/upload.js';
 import { BadRequest } from '../middleware/errors.js';
-// import { downloadFile, getFile, getFiles, getFileURL, uploadFile } from '../libs/Ejemplostorage.js';
+
+import { errorResponse } from '../helper/response.js';
 
 function fileRouter(app) {
     const router = Router();
