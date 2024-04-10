@@ -1,17 +1,20 @@
 import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+
 import fs from 'fs'
 import path from 'path'
+
 import { v4 as uuidv4 } from 'uuid';
 
 import config from '../config/config.js'
 import { BadRequest } from '../middleware/errors.js';
+import env from '../config/env.js';
 
 const client = new S3Client({
-    region: config.awsBucketRegion,
+    region: env.AWS_BUCKET_REGION,
     credentials: {
-        accessKeyId: config.awsBucketAccessKey,
-        secretAccessKey: config.awsBucketSecretAccessKey
+        accessKeyId: env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: env.AWS_SECRET_ACCESS_KEY
     }
 })
 
