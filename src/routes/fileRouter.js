@@ -46,7 +46,7 @@ function fileRouter(app) {
 
             const { fileName } = req.params
             const result = filesServ.download(fileName,res)
-            if(!result.success) throw new BadRequest("Error al descargar el archivo")
+            // if(!result.success) throw new BadRequest("Error al descargar el archivo")
             
             res.status(200).json({
                 success: true,
