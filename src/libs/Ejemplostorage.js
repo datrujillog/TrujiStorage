@@ -66,11 +66,12 @@ export async function downloadFile(filename) {
 
 
 
+
 // TODO: obtener la url de un archivo en el bucket para compartir o descargar
 export async function getFileURL(filename) {
   const command = new GetObjectCommand({
-      Bucket: AWS_BUCKET_NAME,
-      Key: filename
+      Bucket: config.awsBucketName,
+      Key: `uploads/${filename}`
   })
   return await getSignedUrl(client, command, { expiresIn: 3600 })
 }

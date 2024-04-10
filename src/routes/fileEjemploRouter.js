@@ -5,9 +5,9 @@ import fileUpload from 'express-fileupload'
 import { Router } from 'express';
 import FilesService from '../service/fileService.js';
 import { errorResponse } from '../helper/response.js';
-import { downloadFile, getFile, getFiles, getFileURL, uploadFile } from '../libs/storage.js';
+import { downloadFile, getFile, getFiles, getFileURL, uploadFile } from '../libs/Ejemplostorage.js';
 
-function fileRouter(app) {
+function fileEjemploRouter(app) {
     const router = Router();
 
     const filesServ = new FilesService()
@@ -18,7 +18,6 @@ function fileRouter(app) {
 
     }), router)
 
-    //! controlar el error cuando no existe un archivo a borrar
 
 
 
@@ -40,6 +39,8 @@ function fileRouter(app) {
 
     });
 
+
+
     router.get("/getFiles", async (req, res) => {
         try {
             const result = await getFiles()
@@ -56,10 +57,10 @@ function fileRouter(app) {
         try {
             const result = await getFile(req.params.fileName)
             console.log(result)
-            res.status(200).json({ 
+            res.status(200).json({
                 // url: result.url,
                 ContentType: result.ContentType,
-                ContentLength:  result.ContentLength,
+                ContentLength: result.ContentLength,
                 Etag: result.ETag,
                 metadata: result.$metadata,
             })
@@ -72,24 +73,11 @@ function fileRouter(app) {
     })
 
 
-
-    //  todo : comaprtir url de un archivo para descargar
-    app.get('/uploadUrl/files/:fileName', async (req, res) => {
-        const result = await getFileURL(req.params.fileName)
-        res.json({
-            url: result
-        })
-    })
-
-
     // todo : download file 
 
     router.get("/download/:fileName", async (req, res) => {
         try {
             const result = await downloadFile(req.params.fileName)
-            // res.setHeader('Content-Disposition', `attachment; filename=${req.params.fileName}`);
-            // res.setHeader('Content-Type', result.ContentType);
-            // res.send(result)
             res.json({
                 message: "File downloaded successfully",
                 result
@@ -102,12 +90,23 @@ function fileRouter(app) {
     })
 
 
+    //  todo : comaprtir url de un archivo para descargar
 
+    router.get("/url/file/:fileName", async (req, res) => {
+        try {
+            const result = await getFileURL(req.params.fileName) 
+            res.json({
+                url: result
+            })
 
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            errorResponse(res, error)
+        }
 
-    
+    })
 
 
 }
 
-export default fileRouter
+export default fileEjemploRouter
