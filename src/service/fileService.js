@@ -5,9 +5,8 @@ import upload from '../middleware/upload.js'
 import env from '../config/env.js'
 
 import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
-import fs from 'fs'
 
-const s3 = new AWS.S3()
+// const s3 = new AWS.S3()
 
 class FilesService {
     constructor() {
