@@ -12,7 +12,7 @@ function fileEjemploRouter(app) {
 
     const filesServ = new FilesService()
 
-    app.use("/api/v1/files", fileUpload({
+    app.use("/api/v1/filesEjemplo", fileUpload({
         useTempFiles: true,
         tempFileDir: '/tmp/'  //  esta es la carpeta donde se guardaran los archivos temporales que se suban
 
