@@ -18,7 +18,7 @@ async function uploadFiles(file) {
     try {
         const stream = fs.createReadStream(file.path);
         const ext = path.extname(file.filename);
-        const fileName  = uuidv4() + ext;
+        const fileName = uuidv4() + ext;
 
         const uploadParams = {
             Bucket: config.awsBucketName,
@@ -31,7 +31,7 @@ async function uploadFiles(file) {
             success: true,
             message: 'File uploaded successfully',
             originalName: file.originalname,
-            key : uploadParams.Key,
+            key: uploadParams.Key,
             filename: uploadParams.Key,
             fileName
         };
@@ -44,6 +44,22 @@ async function uploadFiles(file) {
     }
 }
 
+const downloadFile = async (fileName, res) => {
+    const downloadParams = {
+        Bucket: config.awsBucketName,
+        Key: `uploads/${fileName}`
+    };
+    const command = new GetObjectCommand(downloadParams);
+    try {
+        const response = await client.send(command);
+        return response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, {end: true}))
+        // return response.Body.pipe(res)
+    } catch (error) {
+        console.error("Error downloading file:", error);
+        throw error; // or handle the error in another appropriate way
+    }
+}
+
 
 const uploadFile = async (files) => {
     const promises = files.map(file => uploadFiles(file));
@@ -53,5 +69,6 @@ const uploadFile = async (files) => {
 }
 
 export {
-    uploadFile
+    uploadFile,
+    downloadFile
 };
