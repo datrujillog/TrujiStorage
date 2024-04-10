@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import fs from 'fs'
 import path from 'path'
@@ -51,11 +51,30 @@ const downloadFile = async (fileName, res) => {
     const command = new GetObjectCommand(downloadParams);
     try {
         const response = await client.send(command);
-        return response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, {end: true}))
+        return response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, { end: true }))
         // return response.Body.pipe(res)
     } catch (error) {
         console.error("Error downloading file:", error);
         throw new BadRequest("An error occurred while downloading the file")
+    }
+}
+
+const deleteFeles = async (fileName) => {
+    try {
+        const deleteParams = {
+            Bucket: config.awsBucketName,
+            Key: `uploads/${fileName}`
+        };
+        const command = new DeleteObjectCommand(deleteParams);
+        await client.send(command);
+        return {
+            success: true,
+            message: 'File deleted successfully',
+            key: deleteParams.Key
+        };
+    } catch (error) {
+        console.error("Error deleting file:", error);
+        throw new BadRequest("An error occurred while deleting the file")
     }
 }
 
@@ -69,5 +88,6 @@ const uploadFile = async (files) => {
 
 export {
     uploadFile,
-    downloadFile
+    downloadFile,
+    deleteFeles
 };
