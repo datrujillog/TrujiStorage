@@ -19,10 +19,10 @@ class FileRepository {
                     name: data.fileName,
                     ownerId: userId
                 },
-                
-                
+
+
             });
- 
+
             return {
                 success: true,
                 user
@@ -36,6 +36,31 @@ class FileRepository {
         }
 
 
+    }
+
+    async findFileById(fileName) {
+
+        try {
+
+            const file = await this.#fileModel.findUnique({
+                where: {
+                    name: fileName
+                }
+            });
+
+            if (!file) throw new NotFound("File not found");
+
+            return {
+                success: true,
+                file
+            }
+
+        } catch (error) {
+
+            throw new BadRequest(error);
+            
+            // return { success: false, error: { message: error.message } };
+        }
     }
 }
 
