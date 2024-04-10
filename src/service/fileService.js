@@ -1,9 +1,8 @@
-import config from '../config/config.js'
-import env from '../config/env.js'
+import { BadRequest } from '../middleware/errors.js'
+
+import FileRepository from '../repositories/fileRepository.js'
 
 import { downloadFile, uploadFile } from '../libs/storage.js'
-import { BadRequest } from '../middleware/errors.js'
-import FileRepository from '../repositories/fileRepository.js'
 
 class FilesService extends FileRepository {
     constructor() {
