@@ -5,6 +5,7 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid';
 
 import config from '../config/config.js'
+import { BadRequest } from '../middleware/errors.js';
 
 const client = new S3Client({
     region: config.awsBucketRegion,
@@ -37,11 +38,9 @@ async function uploadFiles(file) {
         };
     } catch (error) {
         console.error('Error uploading file:', error);
-        return {
-            success: false,
-            message: 'An error occurred while uploading the file'
-        };
+        throw new BadRequest("An error occurred while uploading the file")
     }
+
 }
 
 const downloadFile = async (fileName, res) => {
@@ -56,7 +55,7 @@ const downloadFile = async (fileName, res) => {
         // return response.Body.pipe(res)
     } catch (error) {
         console.error("Error downloading file:", error);
-        throw error; // or handle the error in another appropriate way
+        throw new BadRequest("An error occurred while downloading the file")
     }
 }
 
