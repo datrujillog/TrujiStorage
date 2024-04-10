@@ -5,6 +5,7 @@ import upload from '../middleware/upload.js'
 import env from '../config/env.js'
 
 import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand } from '@aws-sdk/client-s3'
+import { uploadFile } from '../libs/storage.js'
 
 // const s3 = new AWS.S3()
 
@@ -13,41 +14,17 @@ class FilesService {
 
     }
 
+    async uploadMany(files) {
+        const results = await uploadFile(files)
+
+        return results
+    }
+
    
     
 
 
-    async upload(fileName, file) {
-        
-        try {
 
-            const ext = path.extname(fileName);  //  esta funcion devuelve la extension del archivo
-
-            
-            const uploadParams = {
-                Bucket: config.awsBucketName,
-                Key: `uploads/${Date.now()}${ext}`,
-                Body: file
-            };
-            const uploadResult = await s3.upload(uploadParams).promise();
-            console.log('UPLOAD RESULT:', uploadResult);
-            const key = uploadResult.Key;
-            const url = `${config.cloudFrontUrl}/${key}`;
-            const location = uploadResult.Location;
-
-            return {
-                success: true,
-                key,
-                url,
-                message: "File uploaded successfully",
-                location
-            };
-
-        } catch (error) {
-            console.error('UPLOAD ERROR:', error);
-            return { success: false, message: "An error occurred" };
-        }
-    }
 
     async download(fileName) {
 
