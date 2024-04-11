@@ -16,16 +16,15 @@ class FileRepository {
         return FileRepository.#instance;
     }
 
-    async createFile(data) {
+    async createFile(data, userId) {
         try {
-            const userId = 5; // Obtener el userId de alguna manera
             const user = await this.#fileModel.create({
                 data: {
                     originalName: data.originalName,
                     name: data.fileName,
                     owner: {
                         connect: {
-                            id: userId
+                            id: Number.parseInt(userId)
                         }
                     
                     }
