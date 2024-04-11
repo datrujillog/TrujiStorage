@@ -18,7 +18,7 @@ const client = new S3Client({
     }
 })
 
-async function uploadFiles(file) {
+async function uploadFile(file) {
     try {
         const stream = fs.createReadStream(file.path);
         const ext = path.extname(file.filename);
@@ -112,15 +112,15 @@ const deleteFiles = async (fileName) => {
 };
 
 
-const uploadFile = async (files) => {
-    const promises = files.map(file => uploadFiles(file));
+const uploadFiles = async (files) => {
+    const promises = files.map(file => uploadFile(file));
     const results = await Promise.allSettled(promises);
 
     return results;
 }
 
 export {
-    uploadFile,
+    uploadFiles,
     downloadFile,
     deleteFiles
 };

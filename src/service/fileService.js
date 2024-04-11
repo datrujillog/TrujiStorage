@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { BadRequest } from '../middleware/errors.js'
 import FileRepository from '../repositories/fileRepository.js'
 
-import { deleteFiles, downloadFile, uploadFile } from '../libs/storage.js'
+import { deleteFiles, downloadFile, uploadFiles } from '../libs/storage.js'
 
 class FilesService extends FileRepository {
     constructor() {
@@ -13,7 +13,7 @@ class FilesService extends FileRepository {
     }
 
     async uploadMany(files) {
-        const results = await uploadFile(files)
+        const results = await uploadFiles(files)
         // gardar en la base de datos los archivos subidos
         const promises = results.map(async (result) => {
             if (result.status === 'fulfilled') {
