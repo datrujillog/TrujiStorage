@@ -21,7 +21,8 @@ class FileRouter {
 
         this.router.post("/upload", uploadFile.array('files'), async (req, res) => {
             try {
-                const results = await filesService.uploadMany(req.files);
+                const userId = req.headers.userid;
+                const results = await filesService.uploadMany(req.files, userId);
                 if (!results) {
                     return errorResponse(res, { message: "An error occurred while uploading the file" });
                 }
