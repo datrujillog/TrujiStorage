@@ -1,12 +1,14 @@
-import { BadRequest } from '../middleware/errors.js'
+import { PrismaClient } from "@prisma/client";
 
+import { BadRequest } from '../middleware/errors.js'
 import FileRepository from '../repositories/fileRepository.js'
 
-import { downloadFile, uploadFile } from '../libs/storage.js'
+import { deleteFiles, downloadFile, uploadFile } from '../libs/storage.js'
 
 class FilesService extends FileRepository {
     constructor() {
         super()
+        // this.fileModel = new PrismaClient()
 
     }
 
@@ -31,45 +33,59 @@ class FilesService extends FileRepository {
 
     async download(fileName, res) {
 
-        const file = await this.findFileById(fileName)
-        if(!file.success) throw new BadRequest("Datos no encontrados en la base de datos")
+        try {
 
-        if (file) {
-            return await downloadFile(fileName, res)
+            const file = await this.findFileById(fileName)
+            if (!file.success) throw new BadRequest(file.error)
+
+            if (file) {
+                return await downloadFile(fileName, res)
+            }
+            return {
+                success: false,
+                message: "File not found",
+                res
+            }
+
+        } catch (error) {
+            return {
+                success: false,
+                message: error.message
+            }
+
         }
-        return {
-            success: false,
-            message: "File not found",
-            res
-        }
+
+
 
 
     }
 
 
+    async delete(fileName) {
+
+        try {
+            const results = await deleteFiles(fileName)
+            if (!results.success) throw new BadRequest(results)
+
+            const deleteFele = await this.deleteFile(results.key)
+            if (!deleteFele.success) throw new BadRequest(deleteFele.error)
+
+            return {
+                success: true,
+                message: "File deleted successfully",
+                deleteFele
+            }
+
+
+        } catch (error) {
+            throw new BadRequest(error.message)
+
+        }
+    }
 
 
 
 
-
-    // async delete(fileName) {
-    //     try {
-    //         const result = await s3.deleteObject({
-    //             Key: `uploads/${fileName}`,
-    //             Bucket: config.awsBucketName
-    //         }).promise()
-
-    //         return {
-    //             success: true,
-    //             message: "File deleted successfully",
-    //             key: fileName
-    //         }
-
-    //     } catch (error) {
-    //         console.log(error)
-    //         return { success: false, message: "An error ocurred" }
-    //     }
-    // }
 
 
 }
