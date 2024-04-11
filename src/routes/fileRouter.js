@@ -47,7 +47,7 @@ class FileRouter {
                 const fileName = req.params.fileName;
                 const result = await filesService.delete(fileName);
                 const { deleteFele } = result;
-                if (!deleteFele.success) throw new BadRequest(deleteFele.error);
+                if (!result.success) throw new BadRequest(deleteFele.error);
                 res.status(200).json({ success: true, result });
             } catch (error) {
                 errorResponse(res, error);
