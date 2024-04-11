@@ -15,18 +15,17 @@ function fileRouter(app) {
 
     app.use("/api/v1/files", router)
 
-    router.post("/upload", uploadFile.array('files'), (req, res) => {
+    router.post("/upload", uploadFile.array('files'), async(req, res) => {
 
         try {
 
-            const results = filesServ.uploadMany(req.files)
+            const results = await filesServ.uploadMany(req.files)
             if (!results) {
                 return errorResponse(res, { message: "An error occurred while uploading the file" })
             }
 
             res.status(200).json({
-                success: true,
-                message: 'Files uploaded successfully',
+                results
             })
 
 
@@ -39,28 +38,43 @@ function fileRouter(app) {
 
     });
 
-    router.get("/download/:fileName", (req, res) => {
+    router.get("/download/:fileName", async(req, res) => {
 
         try {
 
             const { fileName } = req.params
-            const result = filesServ.download(fileName,res)
-            // if(!result.success) throw new BadRequest("Error al descargar el archivo")
-            
-            res.status(200).json({
-                success: true,
-                message: 'File downloaded successfully',
-                // data: result
+            const result = await filesServ.download(fileName, res)
+            // if(!result.success) throw new BadRequest(result.message)
+
+            res.status(200).json({               
+                data: result
             })
 
         } catch (error) {
+            return errorResponse(res, error)
+        }
+    });
 
-            return errorResponse(res, { message: "An error occurred while downloading the fileee" })
+    router.delete("/delete/:fileName", async (req, res) => {
+        try {
+            const fileName  = req.params.fileName
+
+            const result = await filesServ.delete(fileName)
+            const { deleteFele} = result
+            if (!deleteFele.success) throw new BadRequest(deleteFele.error)
+
+            res.status(200).json({
+                success: true,
+                result
+            })
+
+        } catch (error) {
+            errorResponse(res, error)
         }
     });
 
 
-
+ 
 }
 
 export default fileRouter;
