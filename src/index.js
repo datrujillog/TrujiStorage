@@ -12,7 +12,12 @@ const app = express();
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookie());
+app.use(cookie({
+    secret: process.env.COOKIE_SECRET,
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none' // 'none' | 'lax' | 'strict'  que none permite que la cookie se envíe a través de una solicitud de origen cruzado
+}));
 
 // rutas
 app.use(router);
