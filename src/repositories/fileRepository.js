@@ -18,12 +18,17 @@ class FileRepository {
 
     async createFile(data) {
         try {
-            const userId = 2; // Obtener el userId de alguna manera
+            const userId = 5; // Obtener el userId de alguna manera
             const user = await this.#fileModel.create({
                 data: {
                     originalName: data.originalName,
                     name: data.fileName,
-                    ownerId: userId
+                    owner: {
+                        connect: {
+                            id: userId
+                        }
+                    
+                    }
                 }
             });
 
