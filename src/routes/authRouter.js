@@ -1,65 +1,47 @@
-import express, { response } from "express";
-
+import express from "express";
 import authService from "../service/authService.js";
-
 import { errorResponse, authResponse, results } from "../helper/response.js";
 import { BadRequest } from "../middleware/errors.js";
 import env from "../config/env.js";
 import { asyncHandler } from "../middleware/handler.js";
 
+class AuthRouter {
+    static #instance;
 
+    constructor() {
+        if (!AuthRouter.#instance) {
+            AuthRouter.#instance = this;
+            this.router = express.Router();
+            this.setupRoutes();
+        }
 
-function authRouter(app) {
-    const router = express.Router();
+        return AuthRouter.#instance;
+    }
 
-    //instanciar el servicio
-    // const authServ = new AuthService();
-
-    app.use('/api/v1/auth', router);
-    // app.use(env.AUTH_URL, router);
-
-    router.post("/signup", async (req, res) => {
-
-        try {
-
+    setupRoutes() {
+        this.router.post("/signup", asyncHandler(async (req, res) => {
             const body = req.body;
-
-            // const response = await authServ.signup(body);
             const response = await authService.signup(body);
             if (!response.success) throw new BadRequest(response.error.message);
-
             const { user } = response;
-            results(res, 200, true, "User create ", {
-                results: user,
-                // token,
-            });
+            results(res, 200, true, "User created", { results: user });
+        }));
 
-        } catch (error) {
-            errorResponse(res, error.message);
-        }
-
-    })
-
-    router.post("/login", async (req, res) => {
-        try {
+        this.router.post("/login", asyncHandler(async (req, res) => {
             const body = req.body;
-
-            // const response = await authServ.login(body);
             const response = await authService.login(body);
             if (!response.success) throw new BadRequest(response.error.message);
-
             const { user, token } = response;
-            authResponse(res, 200, true, "User login ", {
-                payload: user,
-                token,
-            });
+            authResponse(res, 200, true, "User logged in", { payload: user, token });
+        }));
 
-        } catch (error) {
-            errorResponse(res, error);
-        }
-    })
+        // Puedes agregar más rutas aquí si es necesario
+    }
+    // esta linea  es para que se pueda exportar el router y se pueda usar en el index.js 
+    getRouter() {
+        return this.router;
+    }
 }
 
-
-
-export default authRouter;
+const authRouterInstance = new AuthRouter();
+export default authRouterInstance.getRouter();
