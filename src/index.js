@@ -7,7 +7,7 @@ import swaggerDocument from "./helper/swagger/swagger.js";
 
 // Importar el enrutador de autenticación como un Singleton
 import auth from "./routes/authRouter.js"; 
-import fileRouter from "./routes/fileRouter.js";
+import file from "./routes/fileRouter.js";
 import fileEjemploRouter from "./routes/fileEjemploRouter.js";
 
 // const { str, port } = envalid;
@@ -21,7 +21,9 @@ app.use(cookie());
 
 // Configuración de rutas
 app.use('/api/v1/auth', auth); // Usar el enrutador de autenticación Singleton
-app.use('/api/v1/file', fileRouter);
+app.use('/api/v1/files', file);
+
+// Configuración de rutas de ejemplo
 app.use('/api/v1/file-ejemplo', fileEjemploRouter);
 
 // Configuración de la documentación Swagger
