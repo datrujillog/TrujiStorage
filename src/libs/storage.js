@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, ListObjectsCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import fs from 'fs'
@@ -7,7 +7,7 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid';
 
 import config from '../config/config.js'
-import { BadRequest } from '../middleware/errors.js';
+import { BadRequest, NotFound } from '../middleware/errors.js';
 import env from '../config/env.js';
 
 const client = new S3Client({
@@ -53,33 +53,63 @@ const downloadFile = async (fileName, res) => {
     };
     const command = new GetObjectCommand(downloadParams);
     try {
-        const response = await client.send(command);
-        return response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, { end: true }))
-        // return response.Body.pipe(res)
-    } catch (error) {
-        console.error("Error downloading file:", error);
-        throw new BadRequest("An error occurred while downloading the file")
-    }
-}
+        // Verificar si el archivo existe
+        await client.send(new HeadObjectCommand(downloadParams));
 
-const deleteFeles = async (fileName) => {
+        // Si el archivo existe, procedemos a descargarlo
+        const response = await client.send(command);
+        return response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, { end: true }));
+        // También puedes enviar la respuesta directamente al cliente si prefieres
+        // return response.Body.pipe(res);
+    } catch (error) {
+        if (error.name === 'NotFound') {
+            // Si el archivo no se encuentra, lanzamos un mensaje indicando que no se encontró
+            throw new NotFound("File not found");
+        } else {
+            console.error("Error downloading file:", error);
+            throw new BadRequest("An error occurred while downloading the file");
+        }
+    }
+};
+
+const deleteFiles = async (fileName) => {
     try {
+        // Verificar si el archivo existe
+        const headParams = {
+            Bucket: config.awsBucketName,
+            Key: `uploads/${fileName}`
+        };
+        const headCommand = new HeadObjectCommand(headParams);
+        await client.send(headCommand);
+
+        // Si no se produce un error al verificar la existencia del archivo, procedemos a eliminarlo
         const deleteParams = {
             Bucket: config.awsBucketName,
             Key: `uploads/${fileName}`
         };
-        const command = new DeleteObjectCommand(deleteParams);
-        await client.send(command);
+        const deleteCommand = new DeleteObjectCommand(deleteParams);
+        await client.send(deleteCommand);
+
         return {
             success: true,
             message: 'File deleted successfully',
-            key: deleteParams.Key
+            key: deleteParams.Key,
+            fileName
         };
     } catch (error) {
-        console.error("Error deleting file:", error);
-        throw new BadRequest("An error occurred while deleting the file")
+        if (error.name === 'NotFound') {
+            // Si el archivo no se encuentra, lanzamos un mensaje indicando que no se encontró
+            return {
+                success: false,
+                message: 'File not found',
+                fileName
+            };
+        } else {
+            console.error("Error deleting file:", error);
+            throw new BadRequest("An error occurred while deleting the file");
+        }
     }
-}
+};
 
 
 const uploadFile = async (files) => {
@@ -92,5 +122,5 @@ const uploadFile = async (files) => {
 export {
     uploadFile,
     downloadFile,
-    deleteFeles
+    deleteFiles
 };
