@@ -19,15 +19,15 @@ class AuthRouter {
     }
 
     setupRoutes() {
-        this.router.post("/signup", asyncHandler(async (req, res) => {
+        this.router.post("/signup", async (req, res) => {
             const body = req.body;
             const response = await authService.signup(body);
             if (!response.success) throw new BadRequest(response.error.message);
             const { user } = response;
             results(res, 200, true, "User created", { results: user });
-        }));
+        });
 
-        this.router.post("/login", asyncHandler(async (req, res) => {
+        this.router.post("/login", async (req, res) => {
             try {
                 const body = req.body;
                 const response = await authService.login(body);
@@ -36,6 +36,7 @@ class AuthRouter {
                     res.cookie("token", token, {
                         httpOnly: true,
                         expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 day
+                        // sameSite: "strict", // "strict" | "lax" | "none"
                         secure: false,
                     });
                     authResponse(res, 201, true, "signup successful", { payload: user, token });
@@ -46,7 +47,12 @@ class AuthRouter {
                 // Manejar errores generales
                 errorResponse(res, error);
             }
-        }));
+        });
+
+        this.router.get("/logout", async (req, res) => {
+            res.clearCookie("token");
+            res.status(200).json({ message: "Logged out" });
+        });
 
 
         // Puedes agregar más rutas aquí si es necesario
