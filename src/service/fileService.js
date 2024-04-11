@@ -1,86 +1,91 @@
-import AWS from 'aws-sdk'
-import config from '../config/config.js'
-import path from 'path'
-import upload from '../middleware/upload.js'
-import env from '../config/env.js'
+import { PrismaClient } from "@prisma/client";
 
-const s3 = new AWS.S3()
+import { BadRequest } from '../middleware/errors.js'
+import FileRepository from '../repositories/fileRepository.js'
 
-class FilesService {
+import { deleteFiles, downloadFile, uploadFiles } from '../libs/storage.js'
+
+class FilesService extends FileRepository {
     constructor() {
+        super()
+        // this.fileModel = new PrismaClient()
 
     }
 
+    async uploadMany(files) {
+        const results = await uploadFiles(files)
+        // gardar en la base de datos los archivos subidos
+        const promises = results.map(async (result) => {
+            if (result.status === 'fulfilled') {
+                return await this.createfileName(result.value)
+            }
+        })
 
-    async upload(fileName, file) {
-        
-        try {
-
-            const ext = path.extname(fileName);
-            const uploadParams = {
-                Bucket: config.awsBucketName,
-                Key: `uploads/${Date.now()}${ext}`,
-                Body: file
-            };
-            const uploadResult = await s3.upload(uploadParams).promise();
-            console.log('UPLOAD RESULT:', uploadResult);
-            const key = uploadResult.Key;
-            const url = `${config.cloudFrontUrl}/${key}`;
-            const location = uploadResult.Location;
-
-            return {
-                success: true,
-                key,
-                url,
-                message: "File uploaded successfully",
-                location
-            };
-
-        } catch (error) {
-            console.error('UPLOAD ERROR:', error);
-            return { success: false, message: "An error occurred" };
+        const results2 = await Promise.all(promises)
+        return {
+            success: true,
+            message: 'Files uploaded successfully',
+            // data: results2
+            data: results2
         }
     }
 
-    async download(fileName) {
+
+    async download(fileName, res) {
 
         try {
 
-            const result = s3.getObject({
-                Key: `uploads/${fileName}`,
-                Bucket: env.AWS_BUCKET_NAME,
-            }).createReadStream()
+            const file = await this.findFileById(fileName)
+            if (!file.success) throw new BadRequest(file.error)
 
+            if (file) {
+                return await downloadFile(fileName, res)
+            }
             return {
-                success: true,
-                message: "File downloaded successfully",
-                data: result
+                success: false,
+                message: "File not found",
+                res
             }
 
         } catch (error) {
-            console.log(error)
-            return { success: false, message: "An error ocurred" }
+            return {
+                success: false,
+                message: error.message
+            }
+
         }
+
+
+
+
     }
 
+
     async delete(fileName) {
+
         try {
-            const result = await s3.deleteObject({
-                Key: `uploads/${fileName}`,
-                Bucket: config.awsBucketName
-            }).promise()
+            const results = await deleteFiles(fileName)
+            if (!results.success) throw new BadRequest(results)
+
+            const deleteFele = await this.deleteFile(results.key)
+            if (!deleteFele.success) throw new BadRequest(deleteFele.error)
 
             return {
                 success: true,
                 message: "File deleted successfully",
-                key: fileName
+                deleteFele
             }
 
+
         } catch (error) {
-            console.log(error)
-            return { success: false, message: "An error ocurred" }
+            throw new BadRequest(error.message)
+
         }
     }
+
+
+
+
 
 
 }
