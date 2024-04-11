@@ -1,6 +1,6 @@
 import express, { response } from "express";
 
-import AuthService from "../service/authService.js";
+import authService from "../service/authService.js";
 
 import { errorResponse, authResponse, results } from "../helper/response.js";
 import { BadRequest } from "../middleware/errors.js";
@@ -13,7 +13,7 @@ function authRouter(app) {
     const router = express.Router();
 
     //instanciar el servicio
-    const authServ = new AuthService();
+    // const authServ = new AuthService();
 
     app.use('/api/v1/auth', router);
     // app.use(env.AUTH_URL, router);
@@ -24,7 +24,8 @@ function authRouter(app) {
 
             const body = req.body;
 
-            const response = await authServ.signup(body);
+            // const response = await authServ.signup(body);
+            const response = await authService.signup(body);
             if (!response.success) throw new BadRequest(response.error.message);
 
             const { user } = response;
@@ -43,7 +44,8 @@ function authRouter(app) {
         try {
             const body = req.body;
 
-            const response = await authServ.login(body);
+            // const response = await authServ.login(body);
+            const response = await authService.login(body);
             if (!response.success) throw new BadRequest(response.error.message);
 
             const { user, token } = response;
