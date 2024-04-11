@@ -1,80 +1,65 @@
 import { Router } from 'express';
-
-import FilesService from '../service/fileService.js';
-
+import filesService from '../service/fileService.js';
 import uploadFile from '../middleware/upload.js';
 import { BadRequest } from '../middleware/errors.js';
-
 import { errorResponse } from '../helper/response.js';
 
-function fileRouter(app) {
-    const router = Router();
+class FileRouter {
+    static #instance;
 
-    const filesServ = new FilesService()
+    constructor() {
+        if (!FileRouter.#instance) {
+            FileRouter.#instance = this;
+            this.router = Router();
+            this.setupRoutes();
+        }
 
+        return FileRouter.#instance;
+    }
 
-    app.use("/api/v1/files", router)
+    setupRoutes() {
 
-    router.post("/upload", uploadFile.array('files'), async(req, res) => {
-
-        try {
-
-            const results = await filesServ.uploadMany(req.files)
-            if (!results) {
-                return errorResponse(res, { message: "An error occurred while uploading the file" })
+        this.router.post("/upload", uploadFile.array('files'), async (req, res) => {
+            try {
+                const results = await filesService.uploadMany(req.files);
+                if (!results) {
+                    return errorResponse(res, { message: "An error occurred while uploading the file" });
+                }
+                res.status(200).json({ results });
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                errorResponse(res, error);
             }
+        });
 
-            res.status(200).json({
-                results
-            })
+        this.router.get("/download/:fileName", async (req, res) => {
+            try {
+                const { fileName } = req.params;
+                const result = await filesService.download(fileName, res);
+                res.status(200).json({ data: result });
+            } catch (error) {
+                return errorResponse(res, error);
+            }
+        });
 
+        this.router.delete("/delete/:fileName", async (req, res) => {
+            try {
+                const fileName = req.params.fileName;
+                const result = await filesService.delete(fileName);
+                const { deleteFele } = result;
+                if (!deleteFele.success) throw new BadRequest(deleteFele.error);
+                res.status(200).json({ success: true, result });
+            } catch (error) {
+                errorResponse(res, error);
+            }
+        });
+    }
 
-        } catch (error) {
-            console.error('Error uploading file:', error);
-            errorResponse(res, error)
-        }
-
-
-
-    });
-
-    router.get("/download/:fileName", async(req, res) => {
-
-        try {
-
-            const { fileName } = req.params
-            const result = await filesServ.download(fileName, res)
-            // if(!result.success) throw new BadRequest(result.message)
-
-            res.status(200).json({               
-                data: result
-            })
-
-        } catch (error) {
-            return errorResponse(res, error)
-        }
-    });
-
-    router.delete("/delete/:fileName", async (req, res) => {
-        try {
-            const fileName  = req.params.fileName
-
-            const result = await filesServ.delete(fileName)
-            const { deleteFele} = result
-            if (!deleteFele.success) throw new BadRequest(deleteFele.error)
-
-            res.status(200).json({
-                success: true,
-                result
-            })
-
-        } catch (error) {
-            errorResponse(res, error)
-        }
-    });
-
-
- 
+    getRouter() {
+        return this.router;
+    }
 }
 
-export default fileRouter;
+export default new FileRouter().getRouter();
+// const fileRouterInstance = new FileRouter();
+// export default fileRouterInstance.getRouter();
