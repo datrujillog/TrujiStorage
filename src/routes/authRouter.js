@@ -54,6 +54,21 @@ class AuthRouter {
             res.status(200).json({ message: "Logged out" });
         });
 
+        this.router.post("/validate", async (req, res) => {
+            try {
+                const { token } = req.body;
+                const response = await authService.verifyToken(token);
+                const { success, data, message } = response;
+                if (success) {
+                    authResponse(res, 200, success, message, { payload: data, token});
+                } else {
+                    errorResponse(res, { message });
+                }
+            } catch (error) {
+                errorResponse(res, error);
+            }
+        });
+
 
         // Puedes agregar más rutas aquí si es necesario
     }
