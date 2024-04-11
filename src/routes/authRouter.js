@@ -31,19 +31,15 @@ class AuthRouter {
             try {
                 const body = req.body;
                 const response = await authService.login(body);
-
                 const { success, token, user, error } = response;
-
                 if (success) {
                     res.cookie("token", token, {
                         httpOnly: true,
                         expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 day
                         secure: false,
                     });
-
                     authResponse(res, 201, true, "signup successful", { payload: user, token });
                 } else {
-                    // Enviar respuesta de error si el inicio de sesión falla
                     errorResponse(res, error);
                 }
             } catch (error) {
