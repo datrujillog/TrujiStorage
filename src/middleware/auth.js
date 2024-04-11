@@ -8,18 +8,18 @@ import config from "../config/config.js";
 
 import { extractDataFromToken } from "../helper/extractData.js";
 
-const auth = async (userId, dataToken) => {
+const auth = async (userId, token) => {
 
-    if (!dataToken) {
+    if (!token) {
         throw new NotFound("Token is required");
     }
     try {
-        const { token } = dataToken;
+        // const { token } = dataToken;
         const verify = await verifyToken(token);
         const data = await extractDataFromToken(token);
         console.log(data)
 
-        if (data.userId !== userId) throw new BadRequest("No tienes permisos para acceder a esta información");
+        if (data.userId !== parseInt(userId)) throw new BadRequest("No tienes permisos para acceder a esta información");
 
         return {
             success: true,
@@ -27,7 +27,9 @@ const auth = async (userId, dataToken) => {
             message: `Authenticated user ${data.email}`,
         }
     } catch (error) {
-        return { success: false, error: error };
+        console.error('Error authenticating user:', error);
+        throw new BadRequest(error);
+        // return { success: false, error: error };
     }
 };
 
@@ -35,25 +37,22 @@ const createAccessToken = user => {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 }
 // verifar si el token es valido
-const verifyToken = (token) => {
+const verifyToken = async (token) => {
     try {
         if (!token) {
             throw new BadRequest("Token is required");
         }
-        jwt.verify(token, env.JWT_SECRET, (error, user) => {
-            if (error) {
-                throw new BadRequest("Invalid token");
-            }
-            return user;
-        });
-
+        const decoded = jwt.verify(token, env.JWT_SECRET || config.jwtSecret);
+        return decoded;
     } catch (error) {
-        return { success: false, error: error };
+        throw new BadRequest("Invalid token");
     }
-
-
-
 };
+
+
+
+
+
 
 
 export { auth, verifyToken, createAccessToken }
