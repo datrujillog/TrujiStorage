@@ -28,11 +28,24 @@ class AuthRouter {
         }));
 
         this.router.post("/login", asyncHandler(async (req, res) => {
-            const body = req.body;
-            const response = await authService.login(body);
-            if (!response.success) throw new BadRequest(response.error.message);
-            const { user, token } = response;
-            authResponse(res, 200, true, "User logged in", { payload: user, token });
+            try {
+                const body = req.body;
+                const response = await authService.login(body);
+                if (!response.success) throw new BadRequest(response.error.message);
+                response.success
+                    ? res.cookie("token", response.token, {
+                        httpOnly: true,
+                        expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 day
+                        secure: false,
+                    }) &&
+                    authResponse(res, 201, true, "signup successful", {
+                        payload: response.user,
+                        token: response.token,
+                    })
+                    : errorResponse(res, response.error);
+            } catch (error) {
+                errorResponse(res, error);
+            }
         }));
 
         // Puedes agregar más rutas aquí si es necesario
