@@ -4,27 +4,19 @@ import morgan from "morgan";
 import cookie from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from "./helper/swagger/swagger.js";
+import router from "./routes/index.js";
 
-// Importar el enrutador de autenticación como un Singleton
-import auth from "./routes/authRouter.js"; 
-import file from "./routes/fileRouter.js";
-import fileEjemploRouter from "./routes/fileEjemploRouter.js";
-
-// const { str, port } = envalid;
 const app = express();
 
 // Middlewares globales
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.urlencoded({ extended: true }));
 app.use(cookie());
 
-// Configuración de rutas
-app.use('/api/v1/auth', auth); // Usar el enrutador de autenticación Singleton
-app.use('/api/v1/files', file);
+// rutas
+app.use(router);
 
-// Configuración de rutas de ejemplo
-app.use('/api/v1/file-ejemplo', fileEjemploRouter);
 
 // Configuración de la documentación Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -32,7 +24,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Middleware de manejo de errores
 app.use((error, req, res, next) => {
     console.error(error.message);
-   res.status(500).json({ message:  error.message || error });
+    res.status(500).json({ message: error.message || error });
 });
 
 export default app;
