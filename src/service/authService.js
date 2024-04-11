@@ -3,6 +3,7 @@ import userRepository from "../repositories/userRepository.js";
 import { compare, encrypt } from "../libs/bcrypt.js";
 import { createToken } from "../libs/jwt.js";
 import { parseSignup } from "../helper/normalizeData.js";
+import { verifyToken } from "../middleware/auth.js";
 
 class AuthService {
     static #instance; 
@@ -46,6 +47,17 @@ class AuthService {
             user
         }
     }
+
+    async verifyToken(token) {
+        const data = await verifyToken(token);
+        console.log(data)
+        return {
+            success: true,
+            data,
+            message: 'Token is valid',
+        }
+    }
+    
 }
 
 export default new AuthService();
