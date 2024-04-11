@@ -4,7 +4,9 @@ import morgan from "morgan";
 import cookie from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from "./helper/swagger/swagger.js";
-import authRouterInstance from "./routes/authRouter.js"; // Importar el enrutador de autenticación como un Singleton
+
+// Importar el enrutador de autenticación como un Singleton
+import auth from "./routes/authRouter.js"; 
 import fileRouter from "./routes/fileRouter.js";
 import fileEjemploRouter from "./routes/fileEjemploRouter.js";
 
@@ -18,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookie());
 
 // Configuración de rutas
-app.use('/api/v1/auth', authRouterInstance); // Usar el enrutador de autenticación Singleton
+app.use('/api/v1/auth', auth); // Usar el enrutador de autenticación Singleton
 app.use('/api/v1/file', fileRouter);
 app.use('/api/v1/file-ejemplo', fileEjemploRouter);
 
