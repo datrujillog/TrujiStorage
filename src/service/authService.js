@@ -1,29 +1,27 @@
-
 import { BadRequest } from "../middleware/errors.js";
-
-// import { UserRepository } from "../repositories/userRepository.js";
 import userRepository from "../repositories/userRepository.js";
-
 import { compare, encrypt } from "../libs/bcrypt.js";
 import { createToken } from "../libs/jwt.js";
-
 import { parseSignup } from "../helper/normalizeData.js";
 
-
-
 class AuthService {
+    static #instance; 
 
     constructor() {
+        if (!AuthService.#instance) {
 
+            AuthService.#instance = this;
+        }
+
+        return AuthService.#instance;
     }
 
     async login(data) {
-
         const { email, password } = data;
         const results = await userRepository.getByEmail(email);
 
         const { resulEmail } = results;
-        await compare(password, results.resulEmail.password)
+        await compare(password, resulEmail.password)
         const token = await createToken(resulEmail);
 
         return {
@@ -34,7 +32,6 @@ class AuthService {
     }
 
     async signup(body) {
-
         if (body.password) body.password = await encrypt(body.password);
 
         const save = await parseSignup(body)
@@ -48,12 +45,7 @@ class AuthService {
             success: true,
             user
         }
-
     }
-
-
-
-
 }
 
-export default AuthService;
+export default new AuthService();
