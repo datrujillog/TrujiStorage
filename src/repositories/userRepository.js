@@ -40,17 +40,17 @@ class UserRepository {
         try {
             if (email === undefined) throw new BadRequest("Email is required");
 
-            const resultEmail = await this.#userModel.findUnique({
+            const resulEmail = await this.#userModel.findUnique({
                 where: {
                     email
                 }
             });
 
-            if (!resultEmail) throw new NotFound("User not found");
+            if (!resulEmail) throw new NotFound("User not found");
 
             return {
                 success: true,
-                resultEmail
+                resulEmail
             };
         } catch (error) {
             // Lanza el error en lugar de devolverlo para mantener el flujo de errores consistente
