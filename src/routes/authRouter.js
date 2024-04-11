@@ -31,22 +31,27 @@ class AuthRouter {
             try {
                 const body = req.body;
                 const response = await authService.login(body);
-                if (!response.success) throw new BadRequest(response.error.message);
-                response.success
-                    ? res.cookie("token", response.token, {
+
+                const { success, token, user, error } = response;
+
+                if (success) {
+                    res.cookie("token", token, {
                         httpOnly: true,
                         expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // 1 day
                         secure: false,
-                    }) &&
-                    authResponse(res, 201, true, "signup successful", {
-                        payload: response.user,
-                        token: response.token,
-                    })
-                    : errorResponse(res, response.error);
+                    });
+
+                    authResponse(res, 201, true, "signup successful", { payload: user, token });
+                } else {
+                    // Enviar respuesta de error si el inicio de sesión falla
+                    errorResponse(res, error);
+                }
             } catch (error) {
+                // Manejar errores generales
                 errorResponse(res, error);
             }
         }));
+
 
         // Puedes agregar más rutas aquí si es necesario
     }
