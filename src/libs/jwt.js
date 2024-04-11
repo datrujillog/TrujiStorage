@@ -6,7 +6,7 @@ export async function createToken(string) {
 
     try {
         const token = await jwt.sign({
-            id: string.id,
+            userId: string.id,
             //  string
          }, env.JWT_SECRET, { expiresIn: "1h" });
          
