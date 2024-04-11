@@ -14,11 +14,11 @@ class FilesService {
         return FilesService.#instance;
     }
 
-    async uploadMany(files) {
+    async uploadMany(files, userId) {
         const results = await uploadFiles(files);
         const promises = results.map(async (result) => {
             if (result.status === 'fulfilled') {
-                return await fileRepository.createFile(result.value);
+                return await fileRepository.createFile(result.value, userId);
             }
         });
 
