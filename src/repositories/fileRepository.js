@@ -63,8 +63,8 @@ class FileRepository {
     async deleteMany(fileNames) { 
     try {
         const cleanedFileNames = fileNames.map(fileName => fileName.replace('uploads/', ''));
+        
         const files = await this.#fileModel.deleteMany({ where: { name: { in: cleanedFileNames } } });
-
         if (files.count === 0) throw new NotFound("Files not found");
 
         return {
