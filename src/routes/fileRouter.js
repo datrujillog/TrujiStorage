@@ -49,13 +49,13 @@ class FileRouter {
             }
         });
 
-        this.router.delete("/delete/:fileName", async (req, res) => {
+        this.router.delete("/delete/", async (req, res) => {
             try {
-                const fileName = req.params.fileName;
+                const files = req.body
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
                 await auth(userId, token);
-                const result = await filesService.deleteFile(fileName);
+                const result = await filesService.deleteFile(files);
                 const { deleteFele } = result;
                 if (!result.success) throw new BadRequest(deleteFele.error);
                 res.status(200).json({ success: true, result });
