@@ -56,7 +56,8 @@ class FileRepository {
                 file
             };
         } catch (error) {
-            return { success: false, error };
+            throw new BadRequest(error);
+            // return { success: false, error }; 
         }
     }
 
