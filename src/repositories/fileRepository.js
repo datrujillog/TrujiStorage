@@ -60,7 +60,7 @@ class FileRepository {
         }
     }
 
-    async deleteFile(fileName) {
+    async deleteMany(fileName) {
         try {
             const cleanedFileName = fileName.replace('uploads/', '');
             const file = await this.#fileModel.deleteMany({ where: { name: cleanedFileName } });
