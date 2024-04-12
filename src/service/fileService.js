@@ -31,25 +31,17 @@ class FilesService {
     }
 
     async download(fileName, res) {
-        try {
-            const file = await fileRepository.findFileByName(fileName);
-            if (!file.success) throw new BadRequest(file.error);
+        const file = await fileRepository.findFileByName(fileName);
+        // if (!file.success) throw new BadRequest(file.error);
 
-            if (file) {
-                return downloadFile(fileName, res);
-            }
-
-            return {
-                success: false,
-                message: "File not found",
-                res
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.message
-            };
+        if (file) {
+            return downloadFile(fileName, res); 
         }
+        return {
+            success: false,
+            message: "File not found",
+            res
+        };
     }
 
     async deleteFile(fileName) {
@@ -57,7 +49,7 @@ class FilesService {
             const results = await deleteFiles(fileName);
             if (!results.success) throw new BadRequest(results);
             const { success, deletedFiles } = results;
-            const key = deletedFiles.map((file) => file.key); 
+            const key = deletedFiles.map((file) => file.key);
             const deleteFile = await fileRepository.deleteMany(key);
             if (!deleteFile.success) throw new BadRequest(deleteFile.error);
 
