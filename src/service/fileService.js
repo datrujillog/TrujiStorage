@@ -56,8 +56,12 @@ class FilesService {
         try {
             const results = await deleteFiles(fileName);
             if (!results.success) throw new BadRequest(results);
+            const { success, deletedFiles } = results;
 
-            const deleteFile = await fileRepository.deleteMany(results.key);
+            const key = deletedFiles.map((file) => file.key);
+
+ 
+            const deleteFile = await fileRepository.deleteMany(key);
             if (!deleteFile.success) throw new BadRequest(deleteFile.error);
 
             return {
