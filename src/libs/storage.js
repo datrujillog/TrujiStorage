@@ -48,9 +48,30 @@ const downloadFile = async (fileName, res) => {
 
         // Si el archivo existe, procedemos a descargarlo
         const response = await client.send(command);
-        return response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, { end: true }));
-        // También puedes enviar la respuesta directamente al cliente si prefieres
+    //    response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, { end: true }));
         // return response.Body.pipe(res);
+        
+        response.Body.pipe(res);
+
+
+        
+
+
+
+        // O enviar el archivo como respuesta
+        // res.attachment(fileName);
+        
+
+
+        // O generar un enlace de descarga temporal
+        // const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
+        // return signedUrl;
+        
+
+        
+        
+        
+
     } catch (error) {
         if (error.name === 'NotFound') {
             // Si el archivo no se encuentra, lanzamos un mensaje indicando que no se encontró
