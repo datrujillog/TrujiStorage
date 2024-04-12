@@ -60,24 +60,24 @@ class FileRepository {
         }
     }
 
-    async deleteMany(fileName) {
-        try {
-            const cleanedFileName = fileName.replace('uploads/', '');
-            const file = await this.#fileModel.deleteMany({ where: { name: cleanedFileName } });
+    async deleteMany(fileNames) { 
+    try {
+        const cleanedFileNames = fileNames.map(fileName => fileName.replace('uploads/', ''));
+        const files = await this.#fileModel.deleteMany({ where: { name: { in: cleanedFileNames } } });
 
-            if (file.count === 0) throw new NotFound("File not found");
+        if (files.count === 0) throw new NotFound("Files not found");
 
-            return {
-                success: true,
-                message: 'File deleted successfully'
-            };
-        } catch (error) {
-            return {
-                success: false,
-                error: { message: error.message }
-            };
-        }
+        return {
+            success: true,
+            message: 'Files deleted successfully'
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: { message: error.message }
+        };
     }
+}
 }
 
 export default new FileRepository();
