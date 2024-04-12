@@ -43,7 +43,7 @@ class FileRepository {
 
     async findFileByName(fileName) {
         try {
-            const file = await this.#fileModel.findMany({
+            const file = await this.#fileModel.findMany({ 
                 where: {
                     name: fileName
                 }
