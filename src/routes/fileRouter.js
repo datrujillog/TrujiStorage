@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import filesService from '../service/fileService.js';
 import uploadFile from '../middleware/upload.js';
-import { BadRequest } from '../middleware/errors.js';
+import { BadRequest, NotFound } from '../middleware/errors.js';
 import { auth } from '../middleware/auth.js';
 import { errorResponse } from '../helper/response.js';
 
@@ -43,7 +43,13 @@ class FileRouter {
                 const token = req.cookies.token;
                 await auth(userId, token);
                 const result = await filesService.download(fileName, res);
-                res.status(200).json({ data: result });
+                const {success, message} = result;
+
+                if(success){
+                    res.end();
+                }
+                 throw new NotFound(message);
+                // res.status(200).json({ data: result });
             } catch (error) {
                 return errorResponse(res, error);
             }
