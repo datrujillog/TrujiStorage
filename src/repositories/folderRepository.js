@@ -50,6 +50,22 @@ class UserRepository {
         }
     }
 
+    async getFolders(userId) {
+        try {
+            const folders = await this.#folderModel.findMany({
+                where: {
+                    ownerId: Number.parseInt(userId)
+                }
+            });
+
+            return {
+                success: true,
+                folders
+            }
+        } catch (error) {
+            throw new BadRequest(error);
+        }
+    }
 
 
 }
