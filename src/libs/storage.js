@@ -115,9 +115,6 @@ const deleteFiles = async (fileNames) => {
     }
 };
 
-
-
-
 const uploadFiles = async (files) => {
     const promises = files.map(file => uploadFile(file));
     const results = await Promise.allSettled(promises);
