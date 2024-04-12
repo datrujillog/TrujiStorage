@@ -36,7 +36,7 @@ class FilesService {
             if (!file.success) throw new BadRequest(file.error);
 
             if (file) {
-                return await downloadFile(fileName, res);
+                return downloadFile(fileName, res);
             }
 
             return {
