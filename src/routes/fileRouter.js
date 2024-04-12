@@ -43,13 +43,10 @@ class FileRouter {
                 const token = req.cookies.token;
                 await auth(userId, token);
                 const result = await filesService.download(fileName, res);
-                const {success, message} = result;
-
-                if(success){
-                    res.end();
+                if (result.success === false) {
+                    throw new NotFound(result.message);
                 }
-                 throw new NotFound(message);
-                // res.status(200).json({ data: result });
+                res.end();
             } catch (error) {
                 return errorResponse(res, error);
             }
