@@ -52,12 +52,12 @@ class FilesService {
         }
     }
 
-    async delete(fileName) {
+    async deleteFile(fileName) {
         try {
             const results = await deleteFiles(fileName);
             if (!results.success) throw new BadRequest(results);
 
-            const deleteFile = await fileRepository.deleteFile(results.key);
+            const deleteFile = await fileRepository.deleteMany(results.key);
             if (!deleteFile.success) throw new BadRequest(deleteFile.error);
 
             return {
