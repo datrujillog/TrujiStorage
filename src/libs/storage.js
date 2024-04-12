@@ -62,44 +62,55 @@ const downloadFile = async (fileName, res) => {
     }
 };
 
-const deleteFiles = async (fileName) => {
+const deleteFiles = async (fileNames) => {
     try {
-        // Verificar si el archivo existe
-        const headParams = {
-            Bucket: config.awsBucketName,
-            Key: `uploads/${fileName}`
-        };
-        const headCommand = new HeadObjectCommand(headParams);
-        await client.send(headCommand);
-
-        // Si no se produce un error al verificar la existencia del archivo, procedemos a eliminarlo
-        const deleteParams = {
-            Bucket: config.awsBucketName,
-            Key: `uploads/${fileName}`
-        };
-        const deleteCommand = new DeleteObjectCommand(deleteParams);
-        await client.send(deleteCommand);
-
-        return {
-            success: true,
-            message: 'File deleted successfully',
-            key: deleteParams.Key,
-            fileName
-        };
-    } catch (error) {
-        if (error.name === 'NotFound') {
-            // Si el archivo no se encuentra, lanzamos un mensaje indicando que no se encontró
-            return {
-                success: false,
-                message: 'File not found',
-                fileName
-            };
-        } else {
-            console.error("Error deleting file:", error);
-            throw new BadRequest("An error occurred while deleting the file");
+        // Verificar si fileNames.files es un array
+        if (!Array.isArray(fileNames.files)) {
+            throw new Error('files must be an array');
         }
+        const deletedFiles = [];
+        for (const fileName of fileNames.files) {
+            // Verificar si el archivo existe
+            const headParams = {
+                Bucket: config.awsBucketName,
+                Key: `uploads/${fileName}`
+            };
+            const headCommand = new HeadObjectCommand(headParams);
+            try {
+                await client.send(headCommand);
+            } catch (error) {
+                // Si el archivo no se encuentra, agregamos un objeto indicando que no se encontró
+                deletedFiles.push({
+                    success: false,
+                    message: 'File not found',
+                    fileName
+                });
+                continue; // Continuar con el siguiente archivo en la iteración
+            }
+
+            // Si no se produce un error al verificar la existencia del archivo, procedemos a eliminarlo
+            const deleteParams = {
+                Bucket: config.awsBucketName,
+                Key: `uploads/${fileName}`
+            };
+            const deleteCommand = new DeleteObjectCommand(deleteParams);
+            await client.send(deleteCommand);
+
+            deletedFiles.push({
+                success: true,
+                message: 'File deleted successfully',
+                key: deleteParams.Key,
+                fileName
+            });
+        }
+        return deletedFiles;
+    } catch (error) {
+        console.error("Error deleting file:", error);
+        throw new BadRequest("An error occurred while deleting the file");
     }
 };
+
+
 
 
 const uploadFiles = async (files) => {
