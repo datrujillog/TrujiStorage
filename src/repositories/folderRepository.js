@@ -23,7 +23,9 @@ class UserRepository {
     async createFolder(userId, data) {
 
         try {
-
+            if (!data.name) {
+                throw new BadRequest("Data is required");
+            }
             const folderCreate = await this.#folderModel.create({
                 data: {
                     name: data.name,
@@ -36,19 +38,14 @@ class UserRepository {
                 }
             });
 
-            if (!folderCreate) {
-                throw new NotFound("Error creating folder");
-            }
-
-
             return {
                 success: true,
-                user
+                folder: folderCreate
             };
 
         } catch (error) {
             console.log(error);
-            throw new BadRequest(error.message);
+            throw new BadRequest(error);
             // return { success: false, error };
         }
     }
