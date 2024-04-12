@@ -42,13 +42,11 @@ class FileRouter {
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
                 await auth(userId, token);
-                const result = await filesService.download(fileName, res);
-                if (result.success === false) {
-                    throw new NotFound(result.message);
-                }
-                res.end();
+                await filesService.download(fileName, res);
+                
+                
             } catch (error) {
-                return errorResponse(res, error);
+                errorResponse(res, error.message);
             }
         });
 
