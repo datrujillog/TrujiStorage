@@ -103,7 +103,12 @@ const deleteFiles = async (fileNames) => {
                 fileName
             });
         }
-        return deletedFiles;
+        return {
+            success: true,
+            message: 'Files deleted successfully',
+            deletedFiles
+
+        }
     } catch (error) {
         console.error("Error deleting file:", error);
         throw new BadRequest("An error occurred while deleting the file");
