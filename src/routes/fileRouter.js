@@ -55,7 +55,7 @@ class FileRouter {
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
                 await auth(userId, token);
-                const result = await filesService.delete(fileName);
+                const result = await filesService.deleteFile(fileName);
                 const { deleteFele } = result;
                 if (!result.success) throw new BadRequest(deleteFele.error);
                 res.status(200).json({ success: true, result });
