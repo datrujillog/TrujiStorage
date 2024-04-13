@@ -31,10 +31,22 @@ class UserRepository {
     }
 
     async getFolders(userId) {
+
         try {
+
             const folders = await this.#folderModel.findMany({
                 where: {
                     ownerId: Number.parseInt(userId)
+                },
+                include: {
+                    owner: true,
+                    parentFolder: true,
+                    // files: true,
+                    childFolders: {
+                        include: {
+                            childFolders: true
+                        }
+                    }
                 }
             });
 
@@ -42,6 +54,7 @@ class UserRepository {
                 success: true,
                 folders
             }
+
         } catch (error) {
             throw new BadRequest(error);
         }
