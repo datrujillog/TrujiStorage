@@ -8,11 +8,8 @@ class UserRepository {
     #folderModel;
 
     constructor() {
-        // Verificamos si ya hay una instancia creada
         if (!UserRepository.#instance) {
-            // Si no hay una instancia, creamos una nueva y la asignamos a la propiedad estática
             UserRepository.#instance = this;
-            // this.#userModel = new PrismaClient().user;
             this.#folderModel = getClient().folder;
         }
 
@@ -31,9 +28,7 @@ class UserRepository {
     }
 
     async getFolders(userId) {
-
         try {
-
             const folders = await this.#folderModel.findMany({
                 where: {
                     ownerId: Number.parseInt(userId)
@@ -41,14 +36,15 @@ class UserRepository {
                 include: {
                     owner: true,
                     parentFolder: true,
-                    // files: true,
-                    childFolders: {
-                        include: {
-                            childFolders: true
-                        }
-                    }
+                    files: true,
+                    childFolders: true
                 }
             });
+
+            // Recursively get child folders for each folder
+            for (const folder of folders) {
+                folder.childFolders = await this.getChildFolders(userId, folder.id);
+            }
 
             return {
                 success: true,
@@ -60,9 +56,40 @@ class UserRepository {
         }
     }
 
+    async getChildFolders(userId, folderId) {
+        try {
+            const childFolders = await this.#folderModel.findMany({
+                where: {
+                    parentFolderId: folderId,
+                    ownerId: Number.parseInt(userId)
+                },
+                include: {
+                    owner: true,
+                    parentFolder: true,
+                    files: true,
+                    childFolders: true
+                }
+            });
+
+            // Recursively get child folders for each child folder
+            for (const childFolder of childFolders) {
+                childFolder.childFolders = await this.getChildFolders(userId, childFolder.id);
+            }
+
+            return childFolders;
+
+        } catch (error) {
+            throw new BadRequest(error);
+        }
+    }
+
+
 
 }
 
 // Exporta una instancia única de UserRepository en lugar de la clase
 export default new UserRepository();
 
+// for (const folder of folders) {
+//     folder.childFolders = await this.getFolders(userId);
+// }
