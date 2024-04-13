@@ -28,7 +28,7 @@ class UserRepository {
         }
     }
 
-    async getOneByFolders(userId, nameFolders) {
+    async findByFolderMany(userId, nameFolders) {
 
         try {
 
