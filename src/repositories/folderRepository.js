@@ -73,8 +73,8 @@ class UserRepository {
                     ownerId: Number.parseInt(userId)
                 },
                 include: {
-                    owner: true,
-                    parentFolder: true,
+                    // owner: true,
+                    // parentFolder: true,
                     files: true,
                     childFolders: true
                 }
