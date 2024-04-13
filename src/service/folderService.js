@@ -39,8 +39,8 @@ class FolderService {
         }
     }
 
-    async getFindByFolders(userId, nameFolders) {
-        const results = await folderRepository.findByFolderMany(userId, nameFolders);
+    async getFindByFolders(userId, folderId) {
+        const results = await folderRepository.findByFolderMany(userId, folderId);
         const { success, folders } = results;
 
         return {
