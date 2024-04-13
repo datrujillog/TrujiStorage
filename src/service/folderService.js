@@ -39,13 +39,23 @@ class FolderService {
         }
     }
 
-    async getOneFolders(userId, nameFolders) {
-        const results = await folderRepository.getOneByFolders(userId, nameFolders);
+    async getFindByFolders(userId, nameFolders) {
+        const results = await folderRepository.findByFolderMany(userId, nameFolders);
         const { success, folders } = results;
 
         return {
             success: true,
             folders
+        }
+    }
+
+    async deleteFolder(userId, folderId) {
+        const results = await folderRepository.deleteFolder(userId, folderId);
+        const { success, folder } = results;
+
+        return {
+            success: true,
+            folder
         }
     }
 
