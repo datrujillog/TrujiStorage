@@ -17,12 +17,22 @@ class FolderService {
     async createFolder(userId,folder) {
 
         const results = await folderRepository.createFolder(userId, folder); 
-
+        const { success, folder: folderCreate } = results;
  
         return {
             success: true,
-            folder
+            folder: folderCreate
         
+        }
+    }
+
+    async getFolders(userId) {
+        const results = await folderRepository.getFolders(userId);
+        const { success, folders } = results;
+
+        return {
+            success: true,
+            folders
         }
     }
 
