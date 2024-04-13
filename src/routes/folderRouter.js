@@ -27,11 +27,10 @@ class FolderRouter {
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
                 await auth(userId, token);
-
                 const response = await folderService.createFolder(userId, body);
-
+                const { success, folder } = response;
                 if (response) {
-                    authResponse(res, 201, true, "Folder created", { results: response, token });
+                    authResponse(res, 201, true, "Folder created", { payload: folder, token });
                 }
 
             } catch (error) {
@@ -41,8 +40,17 @@ class FolderRouter {
 
         });
 
-        this.router.get("", async (req, res) => {
+        this.router.get("/list", async (req, res) => {
             try {
+
+                const userId = req.headers.userid;
+                const token = req.cookies.token;
+                await auth(userId, token);
+                const response = await folderService.getFolders(userId);
+                const { success, folders } = response;
+                if (response) {
+                    authResponse(res, 200, true, "Folders", { payload: folders, token });
+                }
 
 
             } catch (error) {
