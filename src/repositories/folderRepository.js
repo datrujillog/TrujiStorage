@@ -38,7 +38,13 @@ class UserRepository {
                     ownerId: Number.parseInt(userId)
                 },
                 include: {
-                    // owner: true,
+                    owner:{
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    },
                     // parentFolder: true,
                     files: true,
                     childFolders: true
@@ -104,7 +110,13 @@ class UserRepository {
                     ownerId: Number.parseInt(userId)
                 },
                 include: {
-                    // owner: true,
+                    owner:{
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    },
                     // parentFolder: true,
                     files: true,
                     childFolders: true
