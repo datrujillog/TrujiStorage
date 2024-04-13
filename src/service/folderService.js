@@ -50,7 +50,7 @@ class FolderService {
     }
 
     async deleteFolder(userId, folderId) {
-        const results = await folderRepository.deleteFolder(userId, folderId);
+        const results = await folderRepository.deleteFolderMany(userId, folderId);
         const { success, folder } = results;
 
         return {
