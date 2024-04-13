@@ -20,33 +20,13 @@ class UserRepository {
         return UserRepository.#instance;
     }
 
-    async createFolder(userId, data) {
-
+    async createFolder(data) {
         try {
-            if (!data.name) {
-                throw new BadRequest("Data is required");
-            }
-            const folderCreate = await this.#folderModel.create({
-                data: {
-                    name: data.name,
-                    owner: {
-                        connect: {
-                            id: Number.parseInt(userId)
-                        }
-
-                    }
-                }
-            });
-
-            return {
-                success: true,
-                folder: folderCreate
-            };
-
+            const folderCreate = await this.#folderModel.create({ data });
+            return { success: true, folder: folderCreate };
         } catch (error) {
-            console.log(error);
-            throw new BadRequest(error);
-            // return { success: false, error };
+            console.error("Error creating folder:", error);
+            throw new BadRequest("An error occurred while creating the folder");
         }
     }
 
