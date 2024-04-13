@@ -39,6 +39,16 @@ class FolderService {
         }
     }
 
+    async getOneFolders(userId, nameFolders) {
+        const results = await folderRepository.getOneByFolders(userId, nameFolders);
+        const { success, folders } = results;
+
+        return {
+            success: true,
+            folders
+        }
+    }
+
     
 }
 
