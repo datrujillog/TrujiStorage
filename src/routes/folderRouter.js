@@ -41,6 +41,7 @@ class FolderRouter {
         });
 
         this.router.get("/list", async (req, res) => {
+            
             try {
 
                 const userId = req.headers.userid;
@@ -51,7 +52,6 @@ class FolderRouter {
                 if (response) {
                     authResponse(res, 200, true, "Folders", { payload: folders, token });
                 }
-
 
             } catch (error) {
                 errorResponse(res, error.message);
