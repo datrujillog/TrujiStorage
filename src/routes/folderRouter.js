@@ -66,7 +66,7 @@ class FolderRouter {
                 const token = req.cookies.token;
                 const { nameFolders } = req.params;
                 await auth(userId, token);
-                const response = await folderService.getOneFolders(userId, nameFolders);
+                const response = await folderService.getFindByFolders(userId, nameFolders);
                 const { success, folders } = response;
                 if (response) {
                     authResponse(res, 200, true, "Folders", { payload: folders, token });
