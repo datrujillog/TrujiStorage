@@ -11,6 +11,7 @@ class UserRepository {
         if (!UserRepository.#instance) {
             UserRepository.#instance = this;
             this.#folderModel = getClient().folder;
+            // this.#folderModel = new PrismaClient().folder;
         }
 
         // Devolvemos la instancia existente
@@ -27,8 +28,46 @@ class UserRepository {
         }
     }
 
+    async getOneByFolders(userId, nameFolders) {
+
+        try {
+
+            const folders = await this.#folderModel.findMany({
+                where: {
+                    name: nameFolders,
+                    ownerId: Number.parseInt(userId)
+
+                },
+                include: {
+                    owner: true,
+                    parentFolder: true,
+                    files: true,
+                    childFolders: true
+                }
+            });
+            if(folders.length === 0) {
+                throw new NotFound("Folder not found");
+            }
+            // Recursively get child folders for each folder
+            for (const folder of folders) {
+                folder.childFolders = await this.getChildFolders(userId, folder.id);
+            }
+
+            return {
+                success: true,
+                folders
+            }
+
+
+        } catch (error) {
+            throw new BadRequest(error);
+        }
+
+    }
+
     async getFolders(userId) {
         try {
+            // let userId = 31;
             const folders = await this.#folderModel.findMany({
                 where: {
                     ownerId: Number.parseInt(userId)
@@ -58,6 +97,7 @@ class UserRepository {
 
     async getChildFolders(userId, folderId) {
         try {
+            // let userId = 31;
             const childFolders = await this.#folderModel.findMany({
                 where: {
                     parentFolderId: folderId,
@@ -83,6 +123,8 @@ class UserRepository {
         }
     }
 
+
+   
 
 
 }
