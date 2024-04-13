@@ -58,18 +58,19 @@ class FolderRouter {
             }
         });
 
-        this.router.get("/One/:nameFolders", async (req, res) => {
+        this.router.get("/One/:folderId", async (req, res) => {
 
             try {
 
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
-                const { nameFolders } = req.params;
+                const { folderId } = req.params;
                 await auth(userId, token);
-                const response = await folderService.getFindByFolders(userId, nameFolders);
-                const { success, folders } = response;
+                const response = await folderService.getFindByFolders(userId, folderId);  
+                const { success, folders} = response;
                 if (response) {
-                    authResponse(res, 200, true, "Folders", { payload: folders, token });
+                    // authResponse(res, 200, true, "Folders", { payload: folders, token });
+                    res.json({ success, folders});
                 }
 
             } catch (error) {
