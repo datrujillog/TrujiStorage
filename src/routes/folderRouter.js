@@ -69,8 +69,8 @@ class FolderRouter {
                 const response = await folderService.getFindByFolders(userId, folderId);  
                 const { success, folders} = response;
                 if (response) {
-                    // authResponse(res, 200, true, "Folders", { payload: folders, token });
-                    res.json({ success, folders});
+                    authResponse(res, 200, true, "Folders", { payload: folders, token });
+                    // res.json({ success, folders});
                 }
 
             } catch (error) {
@@ -79,8 +79,18 @@ class FolderRouter {
         });
 
 
-        this.router.delete("/", async (req, res) => {
+        this.router.delete("/delete/:folderId", async (req, res) => {
             try {
+
+                const userId = req.headers.userid;
+                const token = req.cookies.token;
+                const { folderId } = req.params;
+                await auth(userId, token);
+                const response = await folderService.deleteFolder(userId, folderId);
+                const { success, folder } = response;
+                if (response) {
+                    authResponse(res, 200, true, "Folder deleted", { payload: folder, token });
+                }
 
             } catch (error) {
                 errorResponse(res, error);
