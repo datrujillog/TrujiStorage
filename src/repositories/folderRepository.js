@@ -123,6 +123,35 @@ class UserRepository {
         }
     }
 
+    async deleteFolderMany(userId, folderId) {
+        try {
+            const folder = await this.#folderModel.findUnique({
+                where: {
+                    id: Number.parseInt(folderId),
+                    ownerId: Number.parseInt(userId)
+                }
+            });
+
+            if (!folder) {
+                throw new NotFound("Folder not found");
+            }
+
+            const deletedFolder = await this.#folderModel.deleteMany({
+                where: {
+                    id: Number.parseInt(folderId)
+                }
+            });
+
+            return {
+                success: true,
+                folder: deletedFolder
+            }
+
+        } catch (error) {
+            throw new BadRequest(error);
+        }
+    }
+
 
 
 
