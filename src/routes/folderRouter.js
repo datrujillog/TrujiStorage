@@ -23,11 +23,11 @@ class FolderRouter {
 
             try {
 
-                const body = req.body;
+                const {ownerId,name,parentFolderId} = req.body
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
                 await auth(userId, token);
-                const response = await folderService.createFolder(userId, body);
+                const response = await folderService.createFolder(ownerId,name,parentFolderId);
                 const { success, folder } = response;
                 if (response) {
                     authResponse(res, 201, true, "Folder created", { payload: folder, token });
