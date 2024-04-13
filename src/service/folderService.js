@@ -2,6 +2,7 @@ import { BadRequest } from '../middleware/errors.js';
 import folderRepository from '../repositories/folderRepository.js';
 
 import { deleteFiles, downloadFile, uploadFiles } from '../libs/storage.js';
+import parseFolder from '../libs/normalize.js';
 
 class FolderService {
     static #instance;
@@ -14,9 +15,11 @@ class FolderService {
         return FolderService.#instance;
     }
 
-    async createFolder(userId,folder) {
+    async createFolder(ownerId,name,parentFolderId) {
 
-        const results = await folderRepository.createFolder(userId, folder); 
+        const data =  await parseFolder(ownerId, name, parentFolderId);
+
+        const results = await folderRepository.createFolder(data); 
         const { success, folder: folderCreate } = results;
  
         return {
