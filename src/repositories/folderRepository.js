@@ -28,30 +28,30 @@ class UserRepository {
         }
     }
 
-    async findByFolderMany(userId, nameFolders) {
+    async findByFolderMany(userId, folderId) {
 
         try {
 
             const folders = await this.#folderModel.findMany({
                 where: {
-                    name: nameFolders,
+                    id: Number.parseInt(folderId),
                     ownerId: Number.parseInt(userId)
-
                 },
                 include: {
-                    owner: true,
-                    parentFolder: true,
+                    // owner: true,
+                    // parentFolder: true,
                     files: true,
                     childFolders: true
                 }
             });
-            if(folders.length === 0) {
+            if (folders.length === 0) {
                 throw new NotFound("Folder not found");
             }
             // Recursively get child folders for each folder
             for (const folder of folders) {
                 folder.childFolders = await this.getChildFolders(userId, folder.id);
             }
+
 
             return {
                 success: true,
@@ -104,8 +104,8 @@ class UserRepository {
                     ownerId: Number.parseInt(userId)
                 },
                 include: {
-                    owner: true,
-                    parentFolder: true,
+                    // owner: true,
+                    // parentFolder: true,
                     files: true,
                     childFolders: true
                 }
@@ -124,7 +124,7 @@ class UserRepository {
     }
 
 
-   
+
 
 
 }
