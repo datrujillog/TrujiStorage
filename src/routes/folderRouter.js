@@ -23,11 +23,11 @@ class FolderRouter {
 
             try {
 
-                const {ownerId,name,parentFolderId} = req.body
+                const { ownerId, name, parentFolderId } = req.body
                 const userId = req.headers.userid;
                 const token = req.cookies.token;
                 await auth(userId, token);
-                const response = await folderService.createFolder(ownerId,name,parentFolderId);
+                const response = await folderService.createFolder(ownerId, name, parentFolderId);
                 const { success, folder } = response;
                 if (response) {
                     authResponse(res, 201, true, "Folder created", { payload: folder, token });
@@ -41,7 +41,7 @@ class FolderRouter {
         });
 
         this.router.get("/list", async (req, res) => {
-            
+
             try {
 
                 const userId = req.headers.userid;
@@ -57,6 +57,26 @@ class FolderRouter {
                 errorResponse(res, error.message);
             }
         });
+
+        this.router.get("/One/:nameFolders", async (req, res) => {
+
+            try {
+
+                const userId = req.headers.userid;
+                const token = req.cookies.token;
+                const { nameFolders } = req.params;
+                await auth(userId, token);
+                const response = await folderService.getOneFolders(userId, nameFolders);
+                const { success, folders } = response;
+                if (response) {
+                    authResponse(res, 200, true, "Folders", { payload: folders, token });
+                }
+
+            } catch (error) {
+                errorResponse(res, error.message);
+            }
+        });
+
 
         this.router.delete("/", async (req, res) => {
             try {
