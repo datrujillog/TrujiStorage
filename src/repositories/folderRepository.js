@@ -8,50 +8,163 @@ class UserRepository {
     #folderModel;
 
     constructor() {
-        // Verificamos si ya hay una instancia creada
         if (!UserRepository.#instance) {
-            // Si no hay una instancia, creamos una nueva y la asignamos a la propiedad estática
             UserRepository.#instance = this;
-            // this.#userModel = new PrismaClient().user;
             this.#folderModel = getClient().folder;
+            // this.#folderModel = new PrismaClient().folder;
         }
 
         // Devolvemos la instancia existente
         return UserRepository.#instance;
     }
 
-    async createFolder(userId, data) {
+    async createFolder(data) {
+        try {
+            const folderCreate = await this.#folderModel.create({ data });
+            return { success: true, folder: folderCreate };
+        } catch (error) {
+            console.error("Error creating folder:", error);
+            throw new BadRequest("An error occurred while creating the folder");
+        }
+    }
+
+    async findByFolderMany(userId, folderId) {
 
         try {
 
-            const folderCreate = await this.#folderModel.create({
-                data: {
-                    name: data.name,
-                    owner: {
-                        connect: {
-                            id: Number.parseInt(userId)
+            const folders = await this.#folderModel.findMany({
+                where: {
+                    id: Number.parseInt(folderId),
+                    ownerId: Number.parseInt(userId)
+                },
+                include: {
+                    owner:{
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
                         }
-
-                    }
+                    },
+                    // parentFolder: true,
+                    files: true,
+                    childFolders: true
                 }
             });
-
-            if (!folderCreate) {
-                throw new NotFound("Error creating folder");
+            if (folders.length === 0) {
+                throw new NotFound("Folder not found");
+            }
+            // Recursively get child folders for each folder
+            for (const folder of folders) {
+                folder.childFolders = await this.getChildFolders(userId, folder.id);
             }
 
 
             return {
                 success: true,
-                user
-            };
+                folders
+            }
+
 
         } catch (error) {
-            console.log(error);
-            throw new BadRequest(error.message);
-            // return { success: false, error };
+            throw new BadRequest(error);
+        }
+
+    }
+
+    async getFolders(userId) {
+        try {
+            // let userId = 31;
+            const folders = await this.#folderModel.findMany({
+                where: {
+                    ownerId: Number.parseInt(userId)
+                },
+                include: {
+                    // owner: true,
+                    // parentFolder: true,
+                    files: true,
+                    childFolders: true
+                }
+            });
+
+            // Recursively get child folders for each folder
+            for (const folder of folders) {
+                folder.childFolders = await this.getChildFolders(userId, folder.id);
+            }
+
+            return {
+                success: true,
+                folders
+            }
+
+        } catch (error) {
+            throw new BadRequest(error);
         }
     }
+
+    async getChildFolders(userId, folderId) {
+        try {
+            // let userId = 31;
+            const childFolders = await this.#folderModel.findMany({
+                where: {
+                    parentFolderId: folderId,
+                    ownerId: Number.parseInt(userId)
+                },
+                include: {
+                    owner:{
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    },
+                    // parentFolder: true,
+                    files: true,
+                    childFolders: true
+                }
+            });
+
+            // Recursively get child folders for each child folder
+            for (const childFolder of childFolders) {
+                childFolder.childFolders = await this.getChildFolders(userId, childFolder.id);
+            }
+
+            return childFolders;
+
+        } catch (error) {
+            throw new BadRequest(error);
+        }
+    }
+
+    async deleteFolderMany(userId, folderId) {
+        try {
+            const folder = await this.#folderModel.findUnique({
+                where: {
+                    id: Number.parseInt(folderId),
+                    ownerId: Number.parseInt(userId)
+                }
+            });
+
+            if (!folder) {
+                throw new NotFound("Folder not found");
+            }
+
+            const deletedFolder = await this.#folderModel.deleteMany({
+                where: {
+                    id: Number.parseInt(folderId)
+                }
+            });
+
+            return {
+                success: true,
+                folder: deletedFolder
+            }
+
+        } catch (error) {
+            throw new BadRequest(error);
+        }
+    }
+
+
 
 
 
@@ -60,3 +173,6 @@ class UserRepository {
 // Exporta una instancia única de UserRepository en lugar de la clase
 export default new UserRepository();
 
+// for (const folder of folders) {
+//     folder.childFolders = await this.getFolders(userId);
+// }
