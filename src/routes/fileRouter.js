@@ -35,7 +35,7 @@ class FileRouter {
                 errorResponse(res, error);
             }
         });
-
+        //! validar que cuando se descargue un archivo, el usuario tenga permisos para descargarlo
         this.router.get("/download/:fileName", async (req, res) => {
             try {
                 const { fileName } = req.params;
