@@ -16,13 +16,13 @@ const customer = await stripe.customers.create({
 class subscriptionRepository {
     static #instance; // Propiedad estática para almacenar la única instancia
 
-    #folderModel;
+    #subscriptionsModel;
 
     constructor() {
         if (!subscriptionRepository.#instance) {
             subscriptionRepository.#instance = this;
-            this.#folderModel = getClient().folder;
-            // this.#folderModel = new PrismaClient().folder;
+            this.#subscriptionsModel = getClient().subscription;
+            // this.#folderModel = new PrismaClient().subscription;
         }
 
         // Devolvemos la instancia existente
