@@ -20,42 +20,35 @@ class SubscriptionsRouter {
     setupRoutes() {
 
         this.router.post("/create", async (req, res) => {
+            const data = req.body
+            const userId = req.headers.userid;
+            const token = req.cookies.token;
+            await auth(userId, token);
+            const response = await subscriptionService.createSubscription(data);
+            const { success, subscription } = response;
+            if(!success) errorResponse(res, subscription);
+            
+            authResponse(res, 201, true, "Subscription created", { payload: subscription, token });
 
-            try {
-
-                const data = req.body
-                const userId = req.headers.userid;
-                const token = req.cookies.token;
-                await auth(userId, token);
-                const response = await subscriptionService.createSubscription(data);
-                const { success, subscription } = response;
-                if (response) {
-                    authResponse(res, 201, true, "Subscription created", { payload: subscription, token });
-                }
-
-            } catch (error) {
-                console.error('Error uploading file:', error);
-                errorResponse(res, error);
-            }
-
+            // if (response) authResponse(res, 201, true, "Subscription created", { payload: subscription, token });
+            // errorResponse(res, error);
         });
 
         this.router.get("/", async (req, res) => {
 
-            try {
+            // try {
 
-                const userId = req.headers.userid;
-                const token = req.cookies.token;
-                await auth(userId, token);
-                // const response = await folderService.getFolders(userId);
-                const { success, folders } = response;
-                if (response) {
-                    authResponse(res, 200, true, "Subscription", { payload: folders, token });
-                }
+            const userId = req.headers.userid;
+            const token = req.cookies.token;
+            await auth(userId, token);
+            // const response = await folderService.getFolders(userId);
+            const { success, folders } = response;
+            if (response) authResponse(res, 200, true, "Subscription", { payload: folders, token });
+            errorResponse(res, error.message);
 
-            } catch (error) {
-                errorResponse(res, error.message);
-            }
+            // } catch (error) {
+            //     errorResponse(res, error.message);
+            // }
         });
 
         this.router.get("/", async (req, res) => {
@@ -67,7 +60,7 @@ class SubscriptionsRouter {
                 const { folderId } = req.params;
                 await auth(userId, token);
                 // const response = await folderService.getFindByFolders(userId, folderId);  
-                const { success, folders} = response;
+                const { success, folders } = response;
                 if (response) {
                     authResponse(res, 200, true, "Subscription", { payload: folders, token });
                     // res.json({ success, folders});
