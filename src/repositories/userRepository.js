@@ -1,6 +1,11 @@
+import Stripe from 'stripe';
 import { PrismaClient } from "@prisma/client";
+
 import { BadRequest, NotFound } from "../middleware/errors.js";
 import getClient from "../libs/db.js";
+import env from '../config/env.js';
+
+// const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
 
 class UserRepository {
     static #instance; // Propiedad estática para almacenar la única instancia
@@ -14,6 +19,7 @@ class UserRepository {
             UserRepository.#instance = this;
             // this.#userModel = new PrismaClient().user;
             this.#userModel = getClient().user;
+            this.stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
         }
 
         // Devolvemos la instancia existente
@@ -22,10 +28,10 @@ class UserRepository {
 
     async createUsers(data) {
         try {
-            // const customer = await stripe.customers.create({
-            //     email:data.email,
-            //     name:data.name
-            // })
+            const customer = await stripe.customers.create({
+                email:data.email,
+                name:data.name
+            })
             const user = await this.#userModel.create({
                 data: {
                     name: data.name,
@@ -35,6 +41,7 @@ class UserRepository {
                     subscription: {
                         create: {
                             stripeCustomerId: "customer_id",
+                            // stripeCustomerId: customer.id,
                         }
                     }
                 }
