@@ -19,7 +19,7 @@ class UserRepository {
             UserRepository.#instance = this;
             // this.#userModel = new PrismaClient().user;
             this.#userModel = getClient().user;
-            this.stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
+            this.stripe = new Stripe(env.STRIPE_SECRET_KEY);
         }
 
         // Devolvemos la instancia existente
@@ -28,7 +28,7 @@ class UserRepository {
 
     async createUsers(data) {
         try {
-            const customer = await stripe.customers.create({
+            const customer = await this.stripe.customers.create({
                 email:data.email,
                 name:data.name
             })
