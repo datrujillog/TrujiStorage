@@ -1,5 +1,6 @@
-
 import Stripe from 'stripe';
+
+import subscriptionRepository from '../repositories/subscriptionRepository.js';
 
 import { BadRequest } from '../middleware/errors.js';
 import env from '../config/env.js';
@@ -24,9 +25,17 @@ class SubscriptionService {
         return SubscriptionService.#instance;
     }
 
-    async createSubscription(data) {
+    async createSubscription(customerId, priceId) {
 
-        console.log(data)
+        const subscription = await subscriptionRepository.createSubscription(customerId, priceId);
+
+        const data = {
+            stripeSubscriptionId: subscription.id,
+            stripeCustomerId: customerId,
+            stripePriceId: priceId,
+            status: subscription.status,
+        }
+       
 
         return {
             success: true,
