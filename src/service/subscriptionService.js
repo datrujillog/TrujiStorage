@@ -27,27 +27,36 @@ class SubscriptionService {
 
     async createSubscription(customerId, priceId) {
 
-        const subscription = await subscriptionRepository.createSubscription(customerId, priceId);
+        try {
 
-        const data = {
-            stripeSubscriptionId: subscription.id,
-            stripeCustomerId: customerId,
-            stripePriceId: priceId,
-            status: subscription.status,
+            const subscription = await subscriptionRepository.createSubscription(customerId, priceId);
+
+            // const data = {
+            //     stripeSubscriptionId: subscription.id,
+            //     stripeCustomerId: customerId,
+            //     stripePriceId: priceId,
+            //     status: subscription.status,
+            // }
+
+
+            return {
+                success: true,
+                subscription
+            }
+
+        } catch (error) {
+            throw new BadRequest(error.message);
+
         }
-       
 
-        return {
-            success: true,
-            subscription: data
-        }
 
-        
+
+
     }
 
-    
 
-    
+
+
 }
 
 export default new SubscriptionService();
