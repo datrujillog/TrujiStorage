@@ -22,8 +22,23 @@ class UserRepository {
 
     async createUsers(data) {
         try {
+            // const customer = await stripe.customers.create({
+            //     email:data.email,
+            //     name:data.name
+            // })
             const user = await this.#userModel.create({
-                data
+                data: {
+                    name: data.name,
+                    email: data.email,
+                    password: data.password,
+                    active: true,
+                    subscription: {
+                        create: {
+                            stripeCustomerId: "customer_id",
+                        }
+                    }
+                }
+
             });
 
             return {
