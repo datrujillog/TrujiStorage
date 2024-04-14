@@ -5,11 +5,8 @@ import { PrismaClient } from "@prisma/client";
 import getClient from "../libs/db.js";
 import { BadRequest, NotFound } from "../middleware/errors.js";
 
-const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
+// const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
 
-const customer = await stripe.customers.create({
-    email: 'customer@example.com',
-});
 
 
 
@@ -17,12 +14,14 @@ class SubscriptionRepository {
     static #instance; // Propiedad estática para almacenar la única instancia
 
     #subscriptionsModel;
+    #stripe;
 
     constructor() {
         if (!SubscriptionRepository.#instance) {
             SubscriptionRepository.#instance = this;
             this.#subscriptionsModel = getClient().subscription;
             // this.#folderModel = new PrismaClient().subscription;
+            this.#stripe = new Stripe(env.STRIPE_SECRET_KEY);
         }
 
         // Devolvemos la instancia existente
@@ -33,9 +32,9 @@ class SubscriptionRepository {
 
     async createSubscription(customerId, priceId) {
 
-        try {
+        // try {
 
-            const subscription = await stripe.subscriptions.create({
+            const subscription = await this.#stripe.subscriptions.create({
                 customer: customerId,
                 items: [
                     { price: priceId },
@@ -44,27 +43,33 @@ class SubscriptionRepository {
                 expand: ['latest_invoice.payment_intent'],  // es para que se muestre el intento de pago en la respuesta
             });
 
-            const newSubscription = await this.#subscriptionsModel.create({
-                data: {
+            // const newSubscription = await this.#subscriptionsModel.create({
+            //     data: {
+            //         stripeSubscriptionId: subscription.id,
+            //         stripeCustomerId: customerId,
+            //         stripePriceId: priceId,
+            //         status: subscription.status,
+            //     }
+            // });
+
+            return {
+                succes: true,
+                subscription: {
                     stripeSubscriptionId: subscription.id,
                     stripeCustomerId: customerId,
                     stripePriceId: priceId,
                     status: subscription.status,
-                }
-            });
-
-            return {
-                succes: true,
-                subscriptionID: newSubscription.id,
-                clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+                },
+                subscriptionID: subscription.id,
+                clientSecret: subscription.latest_invoice.payment_intent.client_secret
 
             };
 
-        } catch (error) {
-            console.log(error);
-            // return { success: false, error: { message: error.message } };
-            throw new BadRequest(error.message);
-        }
+        // } catch (error) {
+        //     console.log(error);
+        //     // return { success: false, error: { message: error.message } };
+        //     throw new BadRequest(error.message);
+        // }
 
 
     }
