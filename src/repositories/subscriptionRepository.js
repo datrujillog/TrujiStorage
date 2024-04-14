@@ -8,40 +8,66 @@ import { BadRequest, NotFound } from "../middleware/errors.js";
 const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
 
 const customer = await stripe.customers.create({
-  email: 'customer@example.com',
+    email: 'customer@example.com',
 });
 
 
 
-class subscriptionRepository {
+class SubscriptionRepository {
     static #instance; // Propiedad estática para almacenar la única instancia
 
     #subscriptionsModel;
 
     constructor() {
-        if (!subscriptionRepository.#instance) {
-            subscriptionRepository.#instance = this;
+        if (!SubscriptionRepository.#instance) {
+            SubscriptionRepository.#instance = this;
             this.#subscriptionsModel = getClient().subscription;
             // this.#folderModel = new PrismaClient().subscription;
         }
 
         // Devolvemos la instancia existente
-        return subscriptionRepository.#instance;
+        return SubscriptionRepository.#instance;
     }
 
 
 
-    async createSubscription(data) {
+    async createSubscription(customerId, priceId) {
 
-        console.log(data)
+        try {
 
-        return {
-            success: true,
-            subscription: data
+            const subscription = await stripe.subscriptions.create({
+                customer: customerId,
+                items: [
+                    { price: priceId },
+                ],
+                payment_behavior: 'default_incomplete',  // es la linea  es para que si no se completa el pago se cancele la suscripcion
+                expand: ['latest_invoice.payment_intent'],  // es para que se muestre el intento de pago en la respuesta
+            });
+
+            const newSubscription = await this.#subscriptionsModel.create({
+                data: {
+                    stripeSubscriptionId: subscription.id,
+                    stripeCustomerId: customerId,
+                    stripePriceId: priceId,
+                    status: subscription.status,
+                }
+            });
+
+            return {
+                succes: true,
+                subscriptionID: newSubscription.id,
+                clientSecret: subscription.latest_invoice.payment_intent.client_secret,
+
+            };
+
+        } catch (error) {
+            console.log(error);
+            // return { success: false, error: { message: error.message } };
+            throw new BadRequest(error.message);
         }
 
-        
+
     }
 }
 
-export default new subscriptionRepository();
+export default new SubscriptionRepository();
