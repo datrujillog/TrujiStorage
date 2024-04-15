@@ -21,7 +21,7 @@ const auth = async (userId, token) => {
 
         if (data.userId !== parseInt(userId)) throw new BadRequest("No tienes permisos para acceder a esta información");
 
-        return {
+        return { 
             success: true,
             data: data,
             message: `Authenticated user ${data.email}`,
@@ -29,6 +29,7 @@ const auth = async (userId, token) => {
     } catch (error) {
         console.error('Error authenticating user:', error);
         throw new BadRequest(error);
+        // throw error;
         // return { success: false, error: error };
     }
 };
