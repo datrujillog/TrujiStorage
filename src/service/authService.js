@@ -39,7 +39,7 @@ class AuthService {
         if (!save.success) throw new BadRequest(save.error);
 
         const users = await userRepository.createUsers(save.user);
-        if (!users.success) throw new BadRequest(users.error.message);
+        // if (!users.success) throw new BadRequest(users.error);
 
         const { user } = users;
         return {

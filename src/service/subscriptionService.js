@@ -11,7 +11,6 @@ const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
 //   email: 'customer@example.com',
 // });
 
-console.log(customer.id);
 
 
 class SubscriptionService {
