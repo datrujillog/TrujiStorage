@@ -4,6 +4,7 @@ import { PrismaClient } from "@prisma/client";
 
 import getClient from "../libs/db.js";
 import { BadRequest, NotFound } from "../middleware/errors.js";
+import env from '../config/env.js';
 
 // const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
 
