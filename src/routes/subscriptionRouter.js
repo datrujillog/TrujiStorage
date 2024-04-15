@@ -20,18 +20,22 @@ class SubscriptionsRouter {
     setupRoutes() {
 
         this.router.post("/create", async (req, res) => {
-            const data = req.body
-            const userId = req.headers.userid;
-            const token = req.cookies.token;
-            await auth(userId, token);
-            const response = await subscriptionService.createSubscription(data);
-            const { success, subscription } = response;
-            if(!success) errorResponse(res, subscription);
-            
-            authResponse(res, 201, true, "Subscription created", { payload: subscription, token });
 
-            // if (response) authResponse(res, 201, true, "Subscription created", { payload: subscription, token });
-            // errorResponse(res, error);
+            try {
+
+                const data = req.body
+                const userId = req.headers.userid;
+                const token = req.cookies.token;
+                await auth(userId, token);
+                const response = await subscriptionService.createSubscription(data);
+                const { success, subscription } = response;
+                if (!success) errorResponse(res, subscription);
+
+                authResponse(res, 201, true, "Subscription created", { payload: subscription, token });
+
+            } catch (error) {
+                errorResponse(res, error);
+            }
         });
 
         this.router.get("/", async (req, res) => {
