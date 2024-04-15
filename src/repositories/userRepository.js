@@ -27,10 +27,13 @@ class UserRepository {
     }
 
     async createUsers(data) {
+
         try {
+
+            await this.existingUser(data.email);
             const customer = await this.stripe.customers.create({
-                email:data.email,
-                name:data.name
+                email: data.email,
+                name: data.name
             })
             const user = await this.#userModel.create({
                 data: {
@@ -40,21 +43,27 @@ class UserRepository {
                     active: true,
                     subscription: {
                         create: {
-                            stripeCustomerId: "customer_id",
-                            // stripeCustomerId: customer.id,
+                            // stripeCustomerId: "ejmplo",
+                            stripeCustomerId: customer.id,
                         }
                     }
                 }
 
             });
 
+            if (!user) throw new BadRequest("Error creating user");
+
             return {
                 success: true,
                 user
             };
+
         } catch (error) {
+            if (error.code === "P2002") {
+                throw new BadRequest("Email already exists");
+            }
             console.log(error);
-            return { success: false, error: { message: error.message } };
+            throw new BadRequest(error.message);
         }
     }
 
@@ -77,6 +86,29 @@ class UserRepository {
         } catch (error) {
             // Lanza el error en lugar de devolverlo para mantener el flujo de errores consistente
             throw error;
+        }
+    }
+
+    async existingUser(data) {
+        try {
+            const existingUser = await this.#userModel.findUnique({
+                where: {
+                    email: data
+                }
+            });
+
+            if (existingUser) {
+                throw new NotFound("Email already exists");
+            }
+
+
+            return {
+                success: true,
+                existingUser
+            };
+        } catch (error) {
+            // Lanza el error en lugar de devolverlo para mantener el flujo de errores consistente
+            throw new BadRequest(error);
         }
     }
 }
