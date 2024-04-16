@@ -33,7 +33,6 @@ class WebhooksRouter {
                 // if (results) {
                 //     authResponse(res, 200, true, "Webhook received", { payload: results, token});
                 // }
-
                 return res.status(success ? 200 : 400).send(message)
             } catch (error) {
                 errorResponse(res, error);
