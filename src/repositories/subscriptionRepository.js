@@ -33,7 +33,7 @@ class SubscriptionRepository {
 
     async createSubscription(customerId, priceId) {
 
-        // try {
+        try {
 
             const subscription = await this.#stripe.subscriptions.create({
                 customer: customerId,
@@ -44,12 +44,22 @@ class SubscriptionRepository {
                 expand: ['latest_invoice.payment_intent'],  // es para que se muestre el intento de pago en la respuesta
             });
 
+            console.log(subscription);
+
+            // const userId = '64'
             // const newSubscription = await this.#subscriptionsModel.create({
             //     data: {
             //         stripeSubscriptionId: subscription.id,
             //         stripeCustomerId: customerId,
-            //         stripePriceId: priceId,
-            //         status: subscription.status,
+            //         // stripePriceId: priceId,
+            //         // status: subscription.status,
+            //         user: {
+            //             connect: {
+            //                 // id: Number.parseInt(userId)
+            //                 id: Number.parseInt(64)
+            //             }
+                    
+            //         }
             //     }
             // });
 
@@ -60,20 +70,24 @@ class SubscriptionRepository {
                     stripeCustomerId: customerId,
                     stripePriceId: priceId,
                     status: subscription.status,
+                    billing_details: subscription.billing_details,
+                    payment_intent: subscription.latest_invoice.payment_intent,  //el intento de pago
+                    //el numero de la factura
+                    invoice: subscription.latest_invoice,
                 },
                 subscriptionID: subscription.id,
                 clientSecret: subscription.latest_invoice.payment_intent.client_secret
 
             };
 
-        // } catch (error) {
-        //     console.log(error);
-        //     // return { success: false, error: { message: error.message } };
-        //     throw new BadRequest(error.message);
-        // }
-
+        } catch (error) {
+            console.log(error);
+            // return { success: false, error: { message: error.message } };
+            throw new BadRequest(error.message);
+        }
 
     }
 }
+
 
 export default new SubscriptionRepository();
