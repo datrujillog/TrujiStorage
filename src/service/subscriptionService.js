@@ -26,9 +26,9 @@ class SubscriptionService {
 
     async createSubscription(customerId, priceId) {
 
-        try {
+       
 
-            const subscription = await subscriptionRepository.createSubscription(customerId, priceId);
+            const subscription = await subscriptionRepository.createSubscription(customerId, priceId);  
 
             // const data = {
             //     stripeSubscriptionId: subscription.id,
@@ -42,15 +42,6 @@ class SubscriptionService {
                 success: true,
                 subscription
             }
-
-        } catch (error) {
-            throw new BadRequest(error.message);
-
-        }
-
-
-
-
     }
 
 
