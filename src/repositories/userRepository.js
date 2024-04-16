@@ -47,6 +47,9 @@ class UserRepository {
                             stripeCustomerId: customer.id,
                         }
                     }
+                },
+                include: {
+                    subscription: true
                 }
 
             });
