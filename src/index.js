@@ -5,6 +5,7 @@ import cookie from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from "./helper/swagger/swagger.js";
 import router from "./routes/index.js";
+import cors from 'cors';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cookie({
     secure: true,
     sameSite: 'none' // 'none' | 'lax' | 'strict'  que none permite que la cookie se envíe a través de una solicitud de origen cruzado
 }));
+app.use(cors());
 
 // rutas
 app.use(router);
