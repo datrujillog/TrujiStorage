@@ -23,11 +23,11 @@ class SubscriptionsRouter {
 
             try {
 
-                const data = req.body
-                const userId = req.headers.userid;
-                const token = req.cookies.token;
-                await auth(userId, token);
-                const response = await subscriptionService.createSubscription(data);
+                const {customerId, priceId} = req.body 
+                // const userId = req.headers.userid;
+                const token = req.cookies.token; 
+                // await auth(userId, token);
+                const response = await subscriptionService.createSubscription(customerId, priceId);
                 const { success, subscription } = response;
                 if (!success) errorResponse(res, subscription);
 
