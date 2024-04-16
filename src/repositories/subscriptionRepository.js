@@ -44,7 +44,7 @@ class SubscriptionRepository {
                 expand: ['latest_invoice.payment_intent'],  // es para que se muestre el intento de pago en la respuesta
             });
 
-            console.log(subscription);
+            // console.log(subscription);
 
             // const userId = '64'
             // const newSubscription = await this.#subscriptionsModel.create({
