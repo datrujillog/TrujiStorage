@@ -5,11 +5,13 @@ import cookie from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from "./helper/swagger/swagger.js";
 import router from "./routes/index.js";
+import cors from 'cors';
 
 const app = express();
 
 // Middlewares globales
 app.use(morgan('dev'));
+app.use("/api/v1/webhooks/stripe", express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookie({
@@ -18,6 +20,7 @@ app.use(cookie({
     secure: true,
     sameSite: 'none' // 'none' | 'lax' | 'strict'  que none permite que la cookie se envíe a través de una solicitud de origen cruzado
 }));
+app.use(cors());
 
 // rutas
 app.use(router);

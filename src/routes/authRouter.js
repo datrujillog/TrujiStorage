@@ -20,11 +20,20 @@ class AuthRouter {
 
     setupRoutes() {
         this.router.post("/signup", async (req, res) => {
-            const body = req.body;
-            const response = await authService.signup(body);
-            if (!response.success) throw new BadRequest(response.error.message);
-            const { user } = response;
-            results(res, 200, true, "User created", { results: user });
+
+            try {
+
+                const body = req.body;
+                const response = await authService.signup(body);
+                if (!response.success) throw new BadRequest(response.error.message);
+                const { user } = response;
+                results(res, 200, true, "User created", { results: user });
+
+            } catch (error) {
+                errorResponse(res, error.message);
+
+            }
+
         });
 
         this.router.post("/login", async (req, res) => {
@@ -60,7 +69,7 @@ class AuthRouter {
                 const response = await authService.verifyToken(token);
                 const { success, data, message } = response;
                 if (success) {
-                    authResponse(res, 200, success, message, { payload: data, token});
+                    authResponse(res, 200, success, message, { payload: data, token });
                 } else {
                     errorResponse(res, { message });
                 }
