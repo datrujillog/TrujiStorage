@@ -21,7 +21,7 @@ class SubscriptionRepository {
         if (!SubscriptionRepository.#instance) {
             SubscriptionRepository.#instance = this;
             this.#subscriptionsModel = getClient().subscription;
-            // this.#folderModel = new PrismaClient().subscription;
+            // this.#subscriptionsModel = new PrismaClient().subscription;
             this.#stripe = new Stripe(env.STRIPE_SECRET_KEY);
         }
 
@@ -92,7 +92,7 @@ class SubscriptionRepository {
         
         try {
 
-            const user = await this.#subscriptionsModel.update({
+            const user = await this.#subscriptionsModel.updateMany({
                 where: {
                     stripeCustomerId: idCustomer
                 },
@@ -101,6 +101,8 @@ class SubscriptionRepository {
                     stripeSubscriptionId: subscriptionId
                 }
             });
+
+            console.log("PREMIUM ",user);
 
             return user;
 
