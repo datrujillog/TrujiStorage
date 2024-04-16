@@ -58,7 +58,7 @@ class SubscriptionRepository {
             //                 // id: Number.parseInt(userId)
             //                 id: Number.parseInt(64)
             //             }
-                    
+
             //         }
             //     }
             // });
@@ -86,6 +86,27 @@ class SubscriptionRepository {
             throw new BadRequest(error.message);
         }
 
+    }
+
+    async activateSubscription(idCustomer, subscriptionId, type) {
+        
+        try {
+
+            const user = await this.#subscriptionsModel.update({
+                where: {
+                    stripeCustomerId: idCustomer
+                },
+                data: {
+                    type: "PREMIUM",
+                    stripeSubscriptionId: subscriptionId
+                }
+            });
+
+            return user;
+
+        } catch (error) {
+            throw new BadRequest(error.message);
+        }
     }
 }
 
