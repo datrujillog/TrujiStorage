@@ -133,6 +133,28 @@ class SubscriptionRepository {
             throw new BadRequest(error.message);
         }
     }
+
+    async createSubscriptionPayPal(idUser,subscriptionId) {
+        
+        try {
+
+            const userPaypal = await this.#subscriptionsModel.updateMany({
+                where: {
+                    userId: idUser
+                },
+                data: {
+                    paypalSubscriptionId: subscriptionId
+                }
+            });
+
+            console.log("PREMIUM PAYPAL ",userPaypal);
+
+            return userPaypal;
+
+        } catch (error) {
+            throw new BadRequest(error.message);
+        }
+    }
 }
 
 
