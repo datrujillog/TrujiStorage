@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import url from 'url';
 
 import subscriptionRepository from '../repositories/subscriptionRepository.js';
 import { BadRequest } from '../middleware/errors.js';
@@ -42,8 +43,8 @@ class SubscriptionService {
             console.log(params.toString())
             const { data: { access_token } } = await paypalClient.post("/v1/oauth2/token", "grant_type=client_credentials", {
                 auth: {
-                    username: paypalPublicKey,
-                    password: paypalSecretKey
+                    username: env.PAYPAL_CLIENT_KEY,
+                    password: env.PAYPAL_SECRET_KEY
                 }
             })
             const response = await paypalClient.post("/v1/billing/subscriptions", {
@@ -55,14 +56,8 @@ class SubscriptionService {
             })
             const subscription = response.data
             console.log(subscription)
-            const result = await client.subscription.update({
-                where: {
-                    userID: idUser
-                },
-                data: {
-                    paypalSubscriptionId: subscription.id
-                }
-            })
+    
+            await subscriptionRepository.createSubscriptionPayPal(idUser, subscription.id)
 
             return {
                 success: true,
