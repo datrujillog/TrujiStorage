@@ -1,5 +1,5 @@
 // const { paypalApiUrl } = require("../config")
-const { default: env } = require("../config/env")
+import  env  from "../config/env.js"
 
 // const axios = require("axios").default
 import axios from "axios"
