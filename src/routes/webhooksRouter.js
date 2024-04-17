@@ -39,6 +39,15 @@ class WebhooksRouter {
             }
         });
 
+        this.router.post("/paypal", async (req, res) => {
+            // const sig = req.headers['stripe-signature'];
+
+            console.log(req.body)
+            await subscriptionsServ.paypalWebhook(req.body)
+
+            return res.status(200).send("OK")
+        });
+
 
 
 
