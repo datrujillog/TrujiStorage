@@ -134,7 +134,7 @@ class SubscriptionRepository {
         }
     }
 
-    async updateSubscriptionPayPal(idUser,subscriptionId) {
+    async createSubscriptionPayPal(idUser,subscriptionId) {
         
         try {
 
