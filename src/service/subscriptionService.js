@@ -57,7 +57,7 @@ class SubscriptionService {
             const subscription = response.data
             console.log(subscription)
     
-            await subscriptionRepository.updateSubscriptionPayPal(idUser, subscription.id)
+            await subscriptionRepository.createSubscriptionPayPal(idUser, subscription.id)
 
             return {
                 success: true,
@@ -119,7 +119,7 @@ class SubscriptionService {
     async paypalWebhook(data) {
         switch (data.event_type) {
             case 'BILLING.SUBSCRIPTION.ACTIVATED':
-                console.log(data.resource.status)
+                console.log("paypal Webhook >>>  ",data.resource.status)
                 if (data.resource.status === "ACTIVE") {
                     const user = await subscriptionRepository.activateSubscriptionPayPal(
                         data.resource.id
