@@ -110,6 +110,51 @@ class SubscriptionRepository {
             throw new BadRequest(error.message);
         }
     }
+    
+    async activateSubscriptionPayPal(subscriptionId,type) {
+        
+        try {
+
+            const user = await this.#subscriptionsModel.updateMany({
+                where: {
+                    paypalSubscriptionId: subscriptionId
+                },
+                data: {
+                    type: "PREMIUM",
+                    paypalSubscriptionId: subscriptionId
+                }
+            });
+
+            console.log("PREMIUM PAYPAL ",user);
+
+            return user[0];
+
+        } catch (error) {
+            throw new BadRequest(error.message);
+        }
+    }
+
+    async createSubscriptionPayPal(idUser,subscriptionId) {
+        
+        try {
+
+            const userPaypal = await this.#subscriptionsModel.updateMany({
+                where: {
+                    userId: idUser
+                },
+                data: {
+                    paypalSubscriptionId: subscriptionId
+                }
+            });
+
+            console.log("PREMIUM PAYPAL ",userPaypal);
+
+            return userPaypal;
+
+        } catch (error) {
+            throw new BadRequest(error.message);
+        }
+    }
 }
 
 

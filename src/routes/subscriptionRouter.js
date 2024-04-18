@@ -23,9 +23,9 @@ class SubscriptionsRouter {
 
             try {
 
-                const {customerId, priceId} = req.body 
+                const { customerId, priceId } = req.body
                 // const userId = req.headers.userid;
-                const token = req.cookies.token; 
+                const token = req.cookies.token;
                 // await auth(userId, token);
                 const response = await subscriptionService.createSubscription(customerId, priceId);
                 const { success, subscription } = response;
@@ -37,6 +37,24 @@ class SubscriptionsRouter {
                 errorResponse(res, error);
             }
         });
+
+        this.router.post("/create/paypal", async (req, res) => {
+
+            try {
+
+                const { userID, planID } = req.body
+
+                const response = await subscriptionService.createSubscriptionPayPal(userID, planID);
+
+                return res.status(200).send(response)
+
+
+            } catch (error) {
+                errorResponse(res, error);
+
+            }
+        });
+
 
         this.router.get("/", async (req, res) => {
 

@@ -1,8 +1,9 @@
 import Stripe from 'stripe';
+import url from 'url';
 
 import subscriptionRepository from '../repositories/subscriptionRepository.js';
-
 import { BadRequest } from '../middleware/errors.js';
+import paypalClient from '../libs/paypalClient.js';
 import env from '../config/env.js';
 
 const stripe = new Stripe(env.STRIPE_PUBLIC_KEY);
@@ -31,6 +32,45 @@ class SubscriptionService {
         }
     }
 
+
+
+    async createSubscriptionPayPal(idUser, planID) {
+
+        try {
+            const params = new url.URLSearchParams({
+                grant_type: "client_credentials"
+            })
+            console.log(params.toString())
+            const { data: { access_token } } = await paypalClient.post("/v1/oauth2/token", "grant_type=client_credentials", {
+                auth: {
+                    username: env.PAYPAL_CLIENT_KEY,
+                    password: env.PAYPAL_SECRET_KEY
+                }
+            })
+            const response = await paypalClient.post("/v1/billing/subscriptions", {
+                'plan_id': planID
+            }, {
+                headers: {
+                    "Authorization": "Bearer " + access_token
+                }
+            })
+            const subscription = response.data
+            console.log(subscription)
+    
+            await subscriptionRepository.createSubscriptionPayPal(idUser, subscription.id)
+
+            return {
+                success: true,
+                subscription
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                success: false,
+                message: "Ocurrió un error, intenta mas tarde"
+            }
+        }
+    }
 
 
     async stripeWebhook(data, signature) {
@@ -74,6 +114,23 @@ class SubscriptionService {
             message: "OK"
         }
 
+    }
+
+    async paypalWebhook(data) {
+        switch (data.event_type) {
+            case 'BILLING.SUBSCRIPTION.ACTIVATED':
+                console.log("paypal Webhook >>>  ",data.resource.status)
+                if (data.resource.status === "ACTIVE") {
+                    const user = await subscriptionRepository.activateSubscriptionPayPal(
+                        data.resource.id
+                    )
+                }
+                break;
+
+            default:
+                console.log(`Unhandled event type ${data.event_type}`);
+                break;
+        }
     }
 
 }

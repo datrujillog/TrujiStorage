@@ -14,7 +14,7 @@ const env = cleanEnv(process.env, {
    AWS_SECRET_ACCESS_KEY: str({ desc: 'pendiente de configurar la clave de acceso de aws' }),
    STRIPE_PUBLIC_KEY: str({ desc: 'pendiente de configurar la clave publica de stripe' }),
    STRIPE_SECRET_KEY: str({ desc: 'pendiente de configurar la clave secreta de stripe' }),
-   PAYPAL_CLIET_KEY: str({ desc: 'pendiente de configurar la clave de cliente de paypal' }),
+   PAYPAL_CLIENT_KEY: str({ desc: 'pendiente de configurar la clave de cliente de paypal' }),
    PAYPAL_SECRET_KEY: str({ desc: 'pendiente de configurar la clave secreta de paypal' }),
    PAYPAL_API_URL: str({ desc: 'pendiente de configurar la url de la api de paypal' }),
 });
