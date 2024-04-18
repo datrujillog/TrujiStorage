@@ -57,7 +57,7 @@ class SubscriptionService {
             const subscription = response.data
             console.log(subscription)
     
-            await subscriptionRepository.createSubscriptionPayPal(idUser, subscription.id)
+            await subscriptionRepository.updateSubscriptionPayPal(idUser, subscription.id)
 
             return {
                 success: true,
