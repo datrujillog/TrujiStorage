@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon ./src/server/server.js",
+    "dev": "npx prisma migrate dev --name initial && node ./src/server/server.js",
+    "start": "npx prisma migrate deploy && npx prisma generate && node ./src/server/server.js",
     "test": "jest"
   },
   "keywords": [],
