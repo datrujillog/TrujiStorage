@@ -14,7 +14,6 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql_custom
 
-
   trujistorage:   
     container_name: trujistorage
     restart: always
