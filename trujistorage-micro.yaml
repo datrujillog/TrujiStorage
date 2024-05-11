@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: trujistorage
+  labels:
+    name: trujistorage
+spec:
+  containers:
+  - name: mysql
+    image: mysql
+    env:
+      - name: MYSQL_ROOT_PASSWORD
+        value: admin
+      - name: MYSQL_DATABASE
+        value: trujistorage
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 8080
