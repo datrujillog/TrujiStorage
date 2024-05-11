@@ -25,6 +25,10 @@ app.use(cors());
 // rutas
 app.use(router);
 
+app.get("/health", (req, res) => {
+    res.send("OK");
+  });
+
 
 // Configuración de la documentación Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
