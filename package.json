@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx prisma migrate dev --name initial && node ./src/server/server.js",
-    "start": "npx prisma migrate deploy && npx prisma generate && node ./src/server/server.js",
+    "start": " prisma migrate dev --create-only && npx prisma migrate deploy && npx prisma generate && node ./src/server/server.js",
     "test": "jest"
   },
   "keywords": [],

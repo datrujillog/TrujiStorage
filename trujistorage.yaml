@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
+  # Remove the name and labels fields
   name: trujistorage
-  labels:
-    name: trujistorage
+  # labels:
+  #   name: trujistorage
 spec: # Se definen las especificaciones del pod (contenedor)
   containers: # Se definen los contenedores que se ejecutarán en el pod
   - name: mysql # Se define el nombre del contenedor
@@ -24,14 +25,13 @@ spec: # Se definen las especificaciones del pod (contenedor)
     # volumeMounts:
     #   - mountPath: /var/lib/mysql
     #     name: trujistorage-volume
-
-  - name: trujistorage 
-    image: trujistorage 
+  - name: trujistorage
+    image: trujistorage
     imagePullPolicy: IfNotPresent
     resources: 
       requests:
-        memory: "500m"
         cpu: "250m"
+        memory: "500Mi"
       limits: 
         memory: "512Mi"
         cpu: "500m" 
