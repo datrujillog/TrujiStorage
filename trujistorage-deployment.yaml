@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trujistorage
+  labels:
+    app: trujistorage
+spec:
+  selector:
+    matchLabels:
+      app: trujistorage
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: trujistorage
+    spec:
+      containers:
+        - name: mysql
+          image: mysql
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: admin
+            - name: MYSQL_DATABASE
+              value: trujistorage
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+
+        - name: trujistorage
+          image: trujistorage
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "500Mi"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 5000
+              name: http
+              protocol: TCP
+          livenessProbe: # Es para saber si el contenedor está vivo o muerto
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 25
+            timeoutSeconds: 1
+            periodSeconds: 10
+            # successThreshold: 1 # Se define el número de veces que la sonda debe tener éxito antes de que se considere que el contenedor está vivo
+            failureThreshold: 3
+          readinessProbe: # Es para saber si el contenedor está listo para recibir tráfico
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 2
+            failureThreshold: 3
