@@ -12,7 +12,7 @@ Con TrujiStorage, estamos comprometidos a ofrecer una solución de almacenamient
 
 
 ## 🛠 Skills
-Javascript, Node.Js, Express.JS, docker, Kubernetes, Amazon S3 - Ec2...
+Javascript, Node.Js, Express.JS, docker, Kubernetes, Amazon S3 - EKS...
 
 ## Authors
 
