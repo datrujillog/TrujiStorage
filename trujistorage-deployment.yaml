@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: trujistorage
+  name: trujistorage-deployment
   labels:
     app: trujistorage
+    tipo: "desarrollo"
 spec:
   selector:
     matchLabels:
@@ -32,7 +33,7 @@ spec:
               protocol: TCP
 
         - name: trujistorage
-          image: trujistorage
+          image: trujistudios/trujistorage:v2
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -62,3 +63,23 @@ spec:
             timeoutSeconds: 1
             periodSeconds: 2
             failureThreshold: 3
+
+# ---
+
+# #############
+# # SERVICIO  
+# #############
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: trujistorage-svc
+# spec:
+#   selector:
+#     app: trujistorage
+#   ports:
+#   - port: 80
+#     nodePort: 30001
+#     protocol: TCP
+  
+    # targetPort: <Target Port>

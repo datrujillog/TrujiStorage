@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   # Remove the name and labels fields
-  name: trujistorage
+  name: trujistorage-pod # Se define el nombre del pod
   # labels:
   #   name: trujistorage
 spec: # Se definen las especificaciones del pod (contenedor)
