@@ -12,9 +12,79 @@ El despliegue de TrujiStorage se realiza de forma eficiente y escalable gracias 
 Con TrujiStorage, estamos comprometidos a ofrecer una solución de almacenamiento en la nube que combine la última tecnología con una experiencia de usuario excepcional, impulsando así la productividad y la seguridad para individuos y empresas por igual.
 
 
+## Tecnologías Utilizadas
+
+- **Backend**: NodeJS, ExpressJS
+- **Base de Datos**: MySQL, Prisma (ORM)
+- **Contenedores**: Docker
+- **Orquestación**: Kubernetes (Minikube)
+- **Infraestructura**: AWS (S3 para almacenamiento de imágenes, EKS para orquestación de contenedores)
+
+## Requisitos
+
+- Node.js
+- MySQL
+- Docker
+- Kubernetes (Minikube)
+- Cuenta de  Amazon Web Services (S3, EKS)
+
+## Instalación
+
+
+- Debe tener instalado Node.js en su máquina local. Puede descargarlo desde el siguiente enlace: [Node.JS] (https://nodejs.org/en/download/) Para instalar Node.js en tu sistema operativo.
+
+- Debe tener instalado MySQL en su máquina local. Puede descargarlo desde el siguiente enlace: [MySQL](https://dev.mysql.com/downloads/) Para instalar MySQL en tu sistema operativo.
+
+- Debe tener instalado Docker en su máquina local. Puede descargarlo desde el siguiente enlace: [la documentación oficial de Docker](https://www.docker.com/products/docker-desktop)  para instalar Docker en tu sistema operativo.
+
+- Debe tener instalado Kubernetes en su máquina local. Puede descargarlo desde el siguiente enlace: [Minikube](https://minikube.sigs.k8s.io/docs/start/)  para instalar Minikube en tu sistema operativo.
+
+- Debe tener una cuenta de Amazon Web Services (AWS) para acceder a los servicios de S3 y EKS. Puede registrarse en el siguiente enlace: [AWS](https://aws.amazon.com/)  para crear una cuenta de AWS.
+
+- Clone el repositorio de TrujiStorage en su máquina local utilizando el siguiente comando:
+
+```bash
+  git clone https://github.com/datrujillog/TrujiStorage.git
+  cd TrujiStorage
+```
+
+- **Configurar variables de entorno**: Cree un archivo `.env`
+
+- **Ejecutar el archivo `docker-compose.yml` para crear los contenedores de MySQL y Prisma:
+
+```bash
+  docker-compose up -d
+```
+
+- **Ejecutar el archivo `namespace.yml` para crear el namespace de Kubernetes:
+
+```bash
+  kubectl apply -f namespace.yml
+```
+
+- **Ejecutar el archivo `limitex-namespace.yml` Para especificar los límites de recursos para el namespace de Kubernetes:
+
+```bash
+  kubectl apply -f limitex-namespace.yml
+```
+
+- **Ejecutar el archivo `trujistorage.Deployment.yml` para crear el deployment de Kubernetes:
+
+```bash
+  kubectl apply -f trujistorage-Deployment.yml
+```
+
+- **Ejecutar el archivo `trujistorage.Service.yml` para crear el servicio de Kubernetes:
+
+```bash
+  kubectl apply -f trujistorage-Service.yml
+```
+
+
+
 ## 🛠 Skills
 Javascript, Node.Js, Express.JS, docker, Kubernetes, Amazon S3 - Ec2...
 
 ## Authors
 
-- [@datrujillog](https://www.github.com/datrujillog)
+- [Diego Trujillo](https://www.github.com/datrujillog). Si tienes alguna pregunta, no dudes en contactarme atraves de mi: [Correo Electronico](mailto:trujistudios@gmail.com) o mi [Linkedin](https://www.linkedin.com/in/trujillo-diego/) 
