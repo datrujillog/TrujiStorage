@@ -1,6 +1,0 @@
-
-
-stripe listen --forward-to localhost:5000/api/v1/webhooks/stripe
-
-
-stripe trigger payment_intent.succeeded
