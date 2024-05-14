@@ -33,7 +33,7 @@ spec:
               protocol: TCP
 
         - name: trujistorage
-          image: trujistudios/trujistorage:v2
+          image: trujistudios/trujistorage:latest
           imagePullPolicy: IfNotPresent
           resources:
             requests:
