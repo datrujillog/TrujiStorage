@@ -31,7 +31,7 @@ Con TrujiStorage, estamos comprometidos a ofrecer una solución de almacenamient
 ## Instalación
 
 
-- Debe tener instalado Node.js en su máquina local. Puede descargarlo desde el siguiente enlace: [Node.JS] (https://nodejs.org/en/download/) Para instalar Node.js en tu sistema operativo.
+- Debe tener instalado Node.js en su máquina local. Puede descargarlo desde el siguiente enlace: [Node.JS](https://nodejs.org/en/download/) Para instalar Node.js en tu sistema operativo.
 
 - Debe tener instalado MySQL en su máquina local. Puede descargarlo desde el siguiente enlace: [MySQL](https://dev.mysql.com/downloads/) Para instalar MySQL en tu sistema operativo.
 
