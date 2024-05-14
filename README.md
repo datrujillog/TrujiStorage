@@ -1,3 +1,4 @@
+
 # TrujiStorage
 
 TrujiStorage es una aplicación back-end desarrollada en JavaScript con Node.js y Express.js, diseñada para ofrecer soluciones de almacenamiento en la nube. Con un enfoque en la eficiencia y la escalabilidad, TrujiStorage utiliza una base de datos MySQL junto con el ORM de Prisma para garantizar un rendimiento óptimo y una gestión eficaz de los datos.
@@ -12,7 +13,7 @@ Con TrujiStorage, estamos comprometidos a ofrecer una solución de almacenamient
 
 
 ## 🛠 Skills
-Javascript, Node.Js, Express.JS, docker, Kubernetes, Amazon S3 - EKS...
+Javascript, Node.Js, Express.JS, docker, Kubernetes, Amazon S3 - Ec2...
 
 ## Authors
 

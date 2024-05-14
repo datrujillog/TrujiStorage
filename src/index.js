@@ -1,43 +1,42 @@
-
 import express from "express";
-import envalid from "envalid";
+import { cleanEnv, str, port } from "envalid";
 import morgan from "morgan";
 import cookie from "cookie-parser";
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from "./helper/swagger/swagger.js";
+import router from "./routes/index.js";
+import cors from 'cors';
 
-
-const { str, port } = envalid;
 const app = express();
 
-
-
-//importar las rutas 
-import auth from "./routes/authRouter.js";
-import file from "./routes/fileRouter.js";
-
-
-
-//middlewares
+// Middlewares globales
 app.use(morgan('dev'));
+app.use("/api/v1/webhooks/stripe", express.raw({ type: 'application/json' }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
-app.use(cookie());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookie({
+    secret: process.env.COOKIE_SECRET,
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none' // 'none' | 'lax' | 'strict'  que none permite que la cookie se envíe a través de una solicitud de origen cruzado
+}));
+app.use(cors());
 
+// rutas
+app.use(router);
 
-// importar las rutas
-auth(app)
-file(app)
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-
-
-//middleware de errores
-app.use((error, req, res, next) => {
-    console.error(error.message);
-   res.status(500).json({ message:  error.message || error });
-  
+app.get("/health", (req, res) => {
+    res.send("OK");
   });
 
-  
+
+// Configuración de la documentación Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Middleware de manejo de errores
+app.use((error, req, res, next) => {
+    console.error(error.message);
+    res.status(500).json({ message: error.message || error });
+});
+
 export default app;

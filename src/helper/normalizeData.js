@@ -33,7 +33,7 @@ const parseSignup = async (body) => {
     const requiredFields = ['name', 'email', 'password'];
 
     try {
-        for (const field of requiredFields) {
+        for (const field of requiredFields) { 
             if (!(field in body)) {
                 throw new BadRequest(`Falta el campo obligatorio: ${field}`);
             }
@@ -43,7 +43,7 @@ const parseSignup = async (body) => {
             name: body.name,
             email: body.email,
             password: body.password,
-            active: Boolean,
+            active: body.active
 
         }
 

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: trujistorage-svc  # Se define el nombre del servicio
+spec: # Se definen las especificaciones del servicio
+  selector:  # Se define el selector que se usará para seleccionar los pods que se expondrán en el servicio
+    app: trujistorage
+  ports:  # Se definen los puertos que se expondrán en el servicio
+    - port: 80 # Se define el puerto que se expondrá en el servicio
+      targetPort: 5000 # Se define el puerto al que se redirigirá el tráfico
+      protocol: TCP
+  type: NodePort # Se define el tipo de servicio que se creará
+  # type: LoadBalancer # Se define el tipo de servicio que se creará

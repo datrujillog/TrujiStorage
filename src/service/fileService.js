@@ -1,49 +1,67 @@
-import AWS from 'aws-sdk'
-import config from '../config/config.js'
-import path from 'path'
+import { BadRequest } from '../middleware/errors.js';
+import fileRepository from '../repositories/fileRepository.js';
 
-const s3 = new AWS.S3()
+import { deleteFiles, downloadFile, uploadFiles } from '../libs/storage.js';
 
 class FilesService {
-    constructor() {
+    static #instance;
 
+    constructor() {
+        if (!FilesService.#instance) {
+            FilesService.#instance = this;
+        }
+
+        return FilesService.#instance;
     }
 
+    async uploadMany(files, userId) {
+        const results = await uploadFiles(files);
+        const promises = results.map(async (result) => {
+            if (result.status === 'fulfilled') {
+                return await fileRepository.createFile(result.value, userId);
+            }
+        });
 
-    async upload(fileName, file) {
+        const results2 = await Promise.all(promises);
+        return {
+            success: true,
+            message: 'Files uploaded successfully',
+            data: results2
+        };
+    }
+
+    async download(fileName, res) {
+        const file = await fileRepository.findFileByName(fileName);
+        // if (!file.success) throw new BadRequest(file.error);
+
+        if (file) {
+            return downloadFile(fileName, res); 
+        }
+        return {
+            success: false,
+            message: "File not found",
+            res
+        };
+    }
+
+    async deleteFile(fileName) {
         try {
-            const ext = path.extname(fileName);
-    
-            const uploadParams = {
-                Bucket: config.awsBucketName,
-                Key: `uploads/${Date.now()}${ext}`,
-                Body: file
-            };
-    
-            const uploadResult = await s3.upload(uploadParams).promise();
-    
-            console.log('UPLOAD RESULT:', uploadResult);
-    
-            const key = uploadResult.Key;
-            const url = `${config.cloudFrontUrl}/${key}`;
-            const location = uploadResult.Location;
-    
+            const results = await deleteFiles(fileName);
+            if (!results.success) throw new BadRequest(results);
+            const { success, deletedFiles } = results;
+            const key = deletedFiles.map((file) => file.key);
+            const deleteFile = await fileRepository.deleteMany(key);
+            if (!deleteFile.success) throw new BadRequest(deleteFile.error);
+
             return {
                 success: true,
-                key,
-                url,
-                message: "File uploaded successfully",
-                location
+                message: "File deleted successfully",
+                deleteFile
             };
         } catch (error) {
-            console.error('UPLOAD ERROR:', error);
-            return { success: false, message: "An error occurred" };
+            throw new BadRequest(error.message);
         }
     }
-    
-
-
-
 }
 
-export default FilesService
+export default new FilesService();

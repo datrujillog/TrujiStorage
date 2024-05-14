@@ -1,0 +1,6 @@
+
+
+1 : Ejecutar el NameSpace
+2 : Ejectuar los limitex para NameSpace
+3 : Ejecutar el Deploy
+4 : Ejecutar los Service

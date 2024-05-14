@@ -1,83 +1,132 @@
+import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import fs from 'fs'
+import path from 'path'
+import { v4 as uuidv4 } from 'uuid';
+import config from '../config/config.js'
+import { BadRequest, NotFound } from '../middleware/errors.js';
+import client from './aws.js';
 
 
+async function uploadFile(file) {
+    try {
+        const stream = fs.createReadStream(file.path);
+        const ext = path.extname(file.filename);
+        const fileName = uuidv4() + ext;
 
+        const uploadParams = {
+            Bucket: config.awsBucketName,
+            Key: `uploads/${fileName}`,
+            Body: stream
+        };
+        const command = new PutObjectCommand(uploadParams);
+        await client.send(command);
+        return {
+            success: true,
+            message: 'File uploaded successfully',
+            originalName: file.originalname,
+            key: uploadParams.Key,
+            filename: uploadParams.Key,
+            fileName
+        };
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        throw new BadRequest("An error occurred while uploading the file")
+    }
 
-/**
- * Uploads an image to Amazon S3.
- * @param {Buffer} image - The image to upload.
- */
-function uploadImageToS3(image) {
-    // Create a new S3 client.
-    const s3 = new AWS.S3();
-  
-    // Set the parameters for the upload.
-    const params = {
-      Bucket: 'my-bucket', // The name of the bucket to upload the image to.
-      Key: 'my-image.jpg', // The name of the file to upload.
-      Body: image, // The image to upload.
+}
+
+const downloadFile = async (fileName, res) => {
+    const downloadParams = {
+        Bucket: config.awsBucketName,
+        Key: `uploads/${fileName}`
     };
-  
-    // Upload the image to S3.
-    s3.upload(params, function(err, data) {
-      if (err) {
-        // Handle the error.
-      } else {
-        // The image was uploaded successfully.
-      }
-    });
-  }
-  
+    const command = new GetObjectCommand(downloadParams);
+    try {
+        // Verificar si el archivo existe
+        await client.send(new HeadObjectCommand(downloadParams));
 
+        // Si el archivo existe, procedemos a descargarlo
+        const response = await client.send(command);
+        // response.Body.pipe(fs.createWriteStream(`./downloads/${fileName}`, { end: true }));
+        response.Body.pipe(res);
+        // O generar un enlace de descarga temporal
+        // const signedUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
+        // return signedUrl;
 
-/**
- * Downloads an image from an S3 bucket.
- * @param {string} bucketName - The name of the bucket to download the image from.
- * @param {string} key - The name of the file to download.
- * @returns {Promise<Buffer>} - A promise that resolves to the image data as a Buffer.
- */
-  async function downloadImageFromS3(bucketName, key) {
-    // Create a new S3 client.
-    const s3 = new AWS.S3();
-  
-    // Set the parameters for the download.
-    const params = {
-      Bucket: bucketName, // The name of the bucket to download the image from.
-      Key: key, // The name of the file to download.
-    };
-  
-    // Download the image from S3.
-    const data = await s3.getObject(params).promise();
-  
-    // Return the image data.
-    return data.Body;
-  }
-  
+    } catch (error) {
+        if (error.name === 'NotFound') {
+            // Si el archivo no se encuentra, lanzamos un mensaje indicando que no se encontró
+            throw new NotFound("File not found");
+        } else {
+            console.error("Error downloading file:", error);
+            throw new BadRequest("An error occurred while downloading the file");
+        }
+    }
+};
 
+const deleteFiles = async (fileNames) => {
+    try {
+        // Verificar si fileNames.files es un array
+        if (!Array.isArray(fileNames.files)) {
+            throw new Error('files must be an array');
+        }
+        const deletedFiles = [];
+        for (const fileName of fileNames.files) {
+            // Verificar si el archivo existe
+            const headParams = {
+                Bucket: config.awsBucketName,
+                Key: `uploads/${fileName}`
+            };
+            const headCommand = new HeadObjectCommand(headParams);
+            try {
+                await client.send(headCommand);
+            } catch (error) {
+                // Si el archivo no se encuentra, agregamos un objeto indicando que no se encontró
+                deletedFiles.push({
+                    success: false,
+                    message: 'File not found',
+                    fileName
+                });
+                continue; // Continuar con el siguiente archivo en la iteración
+            }
 
+            // Si no se produce un error al verificar la existencia del archivo, procedemos a eliminarlo
+            const deleteParams = {
+                Bucket: config.awsBucketName,
+                Key: `uploads/${fileName}`
+            };
+            const deleteCommand = new DeleteObjectCommand(deleteParams);
+            await client.send(deleteCommand);
 
+            deletedFiles.push({
+                success: true,
+                message: 'File deleted successfully',
+                key: deleteParams.Key,
+                fileName
+            });
+        }
+        return {
+            success: true,
+            message: 'Files deleted successfully',
+            deletedFiles
 
+        }
+    } catch (error) {
+        console.error("Error deleting file:", error);
+        throw new BadRequest("An error occurred while deleting the file");
+    }
+};
 
+const uploadFiles = async (files) => {
+    const promises = files.map(file => uploadFile(file));
+    const results = await Promise.allSettled(promises);
 
+    return results;
+}
 
-
-
-  /**
- * Deletes an object from an S3 bucket.
- * @param {string} bucketName - The name of the bucket to delete the object from.
- * @param {string} key - The name of the object to delete.
- * @returns {Promise} - A promise that resolves when the object has been deleted.
- */
-async function deleteObjectFromS3(bucketName, key) {
-    // Create a new S3 client.
-    const s3 = new AWS.S3();
-  
-    // Set the parameters for the delete operation.
-    const params = {
-      Bucket: bucketName, // The name of the bucket to delete the object from.
-      Key: key, // The name of the object to delete.
-    };
-  
-    // Delete the object from S3.
-    await s3.deleteObject(params).promise();
-  }
-  
+export {
+    uploadFiles,
+    downloadFile,
+    deleteFiles
+};
