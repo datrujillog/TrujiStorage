@@ -25,11 +25,9 @@ spec:
         - name: mysql
           image: mysql
           imagePullPolicy: IfNotPresent
-          env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: admin
-            - name: MYSQL_DATABASE
-              value: trujistorage
+          envFrom:
+            - configMapRef:
+                name: datos-mysql-env
           resources:
             limits:
               memory: "512Mi"
