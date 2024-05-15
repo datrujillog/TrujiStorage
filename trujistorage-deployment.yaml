@@ -28,6 +28,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: datos-mysql-env
+          # env:
+          #   - name: MYSQL_ROOT_PASSWORD
+          #     value: admin
+          #   - name: MYSQL_DATABASE
+          #     value: trujistorage
           resources:
             limits:
               memory: "512Mi"
