@@ -9,7 +9,13 @@ spec:
   selector:
     matchLabels:
       app: trujistorage
-  replicas: 2
+  replicas: 1
+  strategy:
+    type: RollingUpdate  # Recomendado para producción
+    rollingUpdate:       # estrategia de actualización de despliegue de tipo RollingUpdate
+      maxUnavailable: 1  # Número máximo de pods que pueden estar no disponibles durante la actualización
+      maxSurge: 1        # Número máximo de pods adicionales que pueden ser creados durante la actualización
+  minReadySeconds: 2    # Número mínimo de segundos que un pod debe estar listo sin fallar para que se considere listo
   template:
     metadata:
       labels:
