@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: trujistorage-svc  # Se define el nombre del servicio
+  namespace: trujistudios # Se define el namespace en el que se creará el servicio
 spec: # Se definen las especificaciones del servicio
   selector:  # Se define el selector que se usará para seleccionar los pods que se expondrán en el servicio
     app: trujistorage
