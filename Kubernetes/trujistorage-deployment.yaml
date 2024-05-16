@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: trujistorage-deployment
+  namespace: trujistudios
   labels:
     app: trujistorage
     tipo: "desarrollo"
@@ -26,10 +27,10 @@ spec:
           image: mysql
           imagePullPolicy: IfNotPresent
           envFrom:
-            - configMapRef:
-                name: datos-mysql-env
-            # - secretRef:   # Son las variables de entorno que se encuentran en el secret
-            #     name: mysql-secrets # Nombre del secret
+            # - configMapRef:
+            #     name: datos-mysql-env
+            - secretRef:   # Son las variables de entorno que se encuentran en el secret
+                name: mysql-secrets # Nombre del secret
           # env:
           #   - name: MYSQL_ROOT_PASSWORD
           #     value: admin
