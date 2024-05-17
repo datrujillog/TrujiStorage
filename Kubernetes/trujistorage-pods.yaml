@@ -1,34 +1,28 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  # Remove the name and labels fields
-  name: trujistorage-pod # Se define el nombre del pod
-  # labels:
-  #   name: trujistorage
-spec: # Se definen las especificaciones del pod (contenedor)
-  containers: # Se definen los contenedores que se ejecutarán en el pod
-    - name: mysql # Se define el nombre del contenedor
-      image: mysql # Se define la imagen del contenedor
-      imagePullPolicy: IfNotPresent # Se define la política de extracción de la imagen
-      envFrom:
-        - configMapRef:
-            name: datos-mysql-env
-      resources: # Se definen los recursos que se asignarán al contenedor
-        limits: # Se definen los límites de recursos que se asignarán al contenedor
-          memory: "512Mi" # Se asigna 512 MB de memoria al contenedor (512Mi = 512 MB) osea la mitad de un GB
-          cpu: "500m" # Se asigna 0.5 CPU al contenedor (500m = 0.5 CPU) osea la mitad de un CPU
-      ports: # Se definen los puertos que se expondrán en el contenedor
-        - containerPort: 3306 # Es el puerto que se expondrá en el contenedor
-          protocol: TCP # Es el protocolo de red que se usará para acceder al puerto
-      # volumeMounts:
-      #   - mountPath: /var/lib/mysql
-      #     name: trujistorage-volume
-    - name: trujistorage
-      image: trujistorage
-      imagePullPolicy: IfNotPresent
+  name: trujistorage-pod
+spec:
+  containers:
+    - name: mysql
+      image: mysql
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: admin
+        - name: MYSQL_DATABASE
+          value: trujistorage
+      resources:
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 3306
+          protocol: TCP
+    - name: storage
+      image: trujistudios/trujistorage:v2
       resources:
         requests:
-          cpu: "250m"
+          cpu: "500m"
           memory: "500Mi"
         limits:
           memory: "512Mi"
@@ -44,8 +38,6 @@ spec: # Se definen las especificaciones del pod (contenedor)
         initialDelaySeconds: 25
         timeoutSeconds: 1
         periodSeconds: 10
-        # successThreshold: 1 # Se define el número de veces que la sonda debe tener éxito antes de que se considere que el contenedor está vivo
-        failureThreshold: 3 # Se define el número de veces que la sonda debe fallar antes de que se considere que el contenedor está muerto
-      # volumeMounts:
-      #   - mountPath: /var/www/html
-      #     name: trujistorage-volume
+        failureThreshold: 3
+  imagePullSecrets:
+    - name: midocker
